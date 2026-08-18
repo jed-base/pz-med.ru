@@ -244,3 +244,226 @@ h3 { font-size: 1.15rem; line-height: 1.25; margin-bottom: 10px; letter-spacing:
   .contact-card { padding: 30px 24px; display: block; }
   .contact-card .button { margin-top: 24px; width: 100%; }
 }
+
+/* Hero refinements: clearer typography and a dashboard preview closer to the real product. */
+.site-header {
+  background: rgba(246, 248, 247, .98);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.button-small {
+  font-weight: 700;
+  text-shadow: none;
+  box-shadow: none;
+  filter: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+.button-small:hover {
+  box-shadow: 0 6px 16px rgba(8, 69, 54, .10);
+}
+
+.hero {
+  padding-top: 76px;
+}
+.hero-grid {
+  grid-template-columns: .94fr 1.06fr;
+  gap: 56px;
+}
+h1 {
+  font-size: clamp(3rem, 4.7vw, 4.65rem);
+  line-height: 1.015;
+  letter-spacing: -.055em;
+  max-width: 700px;
+}
+
+.product-window {
+  border-radius: 24px;
+  box-shadow: 0 20px 54px rgba(20, 52, 41, .11);
+  transform: perspective(1400px) rotateY(-1.5deg) rotateX(.4deg);
+}
+.window-top {
+  height: 44px;
+  background: #10231c;
+}
+.mock-layout {
+  grid-template-columns: 58px 1fr;
+  min-height: 458px;
+}
+.mock-side {
+  padding: 14px 9px;
+  gap: 10px;
+}
+.mock-logo {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 8px;
+  border-radius: 9px;
+}
+.mock-side > span {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #78938a;
+}
+.mock-side > span::before {
+  font-size: .82rem;
+  font-style: normal;
+  line-height: 1;
+}
+.mock-side > span:nth-of-type(1)::before { content: "⌂"; }
+.mock-side > span:nth-of-type(2)::before { content: "✓"; }
+.mock-side > span:nth-of-type(3)::before { content: "▦"; }
+.mock-side > span:nth-of-type(4)::before { content: "◷"; }
+.mock-side > span:nth-of-type(5)::before { content: "≡"; }
+.mock-side > span:nth-of-type(6)::before { content: "⚙"; }
+.mock-side > span.active {
+  background: #194a3b;
+  color: #a9ddca;
+}
+
+.mock-main {
+  padding: 22px 22px 24px;
+  background: #f4f7f5;
+}
+.mock-heading {
+  margin-bottom: 16px;
+  font-size: .92rem;
+}
+.mock-heading b::after {
+  content: " · отделение";
+  color: #788881;
+  font-weight: 500;
+  font-size: .72rem;
+}
+.stat-row {
+  gap: 8px;
+}
+.stat-row div {
+  border-radius: 11px;
+  padding: 11px 12px;
+  box-shadow: 0 1px 0 rgba(16,35,28,.02);
+}
+.stat-row strong {
+  margin-top: 3px;
+  font-size: 1.28rem;
+}
+
+.mock-cards {
+  grid-template-columns: 1.25fr .75fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+.mock-card {
+  position: relative;
+  border-radius: 12px;
+  padding: 14px;
+  min-height: 128px;
+}
+.mock-card-wide {
+  min-height: 268px;
+  padding-top: 43px;
+}
+.mock-card-wide::before,
+.mock-card:not(.mock-card-wide)::before {
+  position: absolute;
+  left: 14px;
+  top: 13px;
+  color: #233c33;
+  font-weight: 700;
+  font-size: .72rem;
+}
+.mock-card-wide::before { content: "Требуют действия"; }
+.mock-card:nth-child(2)::before { content: "Ближайшие дни рождения"; }
+.mock-card:nth-child(3)::before { content: "Отсутствуют сегодня"; }
+
+.mock-card-wide > .line,
+.mock-card:nth-child(2) > .line,
+.mock-card:nth-child(3) > .line {
+  display: none;
+}
+.mini-table {
+  margin-top: 0;
+  gap: 7px;
+}
+.mini-table i {
+  position: relative;
+  height: 39px;
+  border-radius: 8px;
+  border: 1px solid #e2ebe7;
+  border-left: 3px solid #7ab39f;
+  background: #f8faf9;
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
+  color: #52655d;
+  font-size: .60rem;
+  font-style: normal;
+}
+.mini-table i::before {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-table i:nth-child(1)::before { content: "Задача со сроком сегодня"; }
+.mini-table i:nth-child(2)::before { content: "Отчёт ожидает заполнения"; }
+.mini-table i:nth-child(3)::before { content: "Отпуск ожидает согласования"; }
+.mini-table i:nth-child(4)::before { content: "Новый алгоритм для отделения"; }
+
+.badge-row {
+  margin-top: 34px;
+  display: grid;
+  gap: 6px;
+}
+.badge-row i {
+  width: 100%;
+  height: 22px;
+  border-radius: 7px;
+  background: #f0f5f3;
+  position: relative;
+  font-style: normal;
+}
+.badge-row i::before {
+  position: absolute;
+  left: 7px;
+  top: 4px;
+  color: #667770;
+  font-size: .52rem;
+}
+.badge-row i:nth-child(1)::before { content: "Иванова · 21 авг"; }
+.badge-row i:nth-child(2)::before { content: "Петров · 24 авг"; }
+.badge-row i:nth-child(3)::before { content: "Сидорова · 28 авг"; }
+
+.mock-card:nth-child(3)::after {
+  content: "2 сотрудника\AОтпуск · больничный";
+  white-space: pre;
+  position: absolute;
+  left: 14px;
+  top: 47px;
+  color: #65766f;
+  font-size: .58rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 980px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 44px; }
+  .product-window { transform: none; }
+}
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: clamp(2.6rem, 12vw, 3.6rem);
+    line-height: 1.02;
+  }
+  .hero { padding-top: 52px; }
+  .mock-layout { grid-template-columns: 46px 1fr; min-height: 390px; }
+  .mock-side > span { width: 30px; height: 30px; }
+  .mock-main { padding: 14px; }
+  .mock-card-wide { min-height: 210px; }
+  .mini-table i { height: 34px; font-size: .55rem; }
+}
