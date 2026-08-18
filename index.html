@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PZ-Med — система управления медицинской организацией</title>
+  <meta name="description" content="PZ-Med — локальная система управления медицинской организацией: задачи, отчёты, графики, отпуска, алгоритмы, документы, отложенная запись и управленческие процессы в едином рабочем пространстве.">
+  <meta name="theme-color" content="#0d5c46">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="PZ-Med — система управления медицинской организацией">
+  <meta property="og:description" content="Рабочие процессы медицинской организации — в единой локальной системе. PZ-Med работает рядом с МИС, а не вместо неё.">
+  <meta property="og:url" content="https://pz-med.ru/">
+  <link rel="canonical" href="https://pz-med.ru/">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script defer src="/assets/site.js"></script>
+</head>
+<body>
+  <header class="site-header" data-header>
+    <div class="shell header-inner">
+      <a class="brand" href="#top" aria-label="PZ-Med — на главную">
+        <span class="brand-mark" aria-hidden="true">PZ</span>
+        <span class="brand-name">PZ-Med</span>
+      </a>
+      <nav class="nav" aria-label="Основная навигация">
+        <a href="#why">Зачем</a>
+        <a href="#capabilities">Возможности</a>
+        <a href="#local">Размещение</a>
+        <a href="#implementation">Внедрение</a>
+      </nav>
+      <a class="button button-small" href="#contact">Обсудить внедрение</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero section">
+      <div class="shell hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">Управление медицинской организацией</div>
+          <h1>Рабочие процессы клиники — <span>в одной системе</span></h1>
+          <p class="hero-lead">PZ-Med помогает организовать задачи, отчёты, графики, документы, отпуска, внутренние алгоритмы и другие процессы, которые обычно распределены между таблицами, чатами, журналами и файлами.</p>
+          <div class="hero-actions">
+            <a class="button" href="#capabilities">Посмотреть возможности</a>
+            <a class="button button-ghost" href="#principle">Как это работает</a>
+          </div>
+          <div class="hero-note">
+            <span class="dot"></span>
+            <span>Не заменяет МИС. Дополняет её управленческими инструментами.</span>
+          </div>
+        </div>
+
+        <div class="product-window reveal" aria-label="Схематичный интерфейс PZ-Med">
+          <div class="window-top">
+            <div class="window-dots"><i></i><i></i><i></i></div>
+            <span>PZ-Med</span>
+            <span class="window-status">локальная сеть</span>
+          </div>
+          <div class="mock-layout">
+            <aside class="mock-side">
+              <div class="mock-logo">PZ</div>
+              <span class="active"></span><span></span><span></span><span></span><span></span><span></span>
+            </aside>
+            <div class="mock-main">
+              <div class="mock-heading"><b>Рабочая панель</b><em></em></div>
+              <div class="stat-row">
+                <div><small>Задачи</small><strong>12</strong></div>
+                <div><small>Отчёты</small><strong>4</strong></div>
+                <div><small>На сегодня</small><strong>7</strong></div>
+              </div>
+              <div class="mock-cards">
+                <div class="mock-card mock-card-wide">
+                  <div class="line lg"></div><div class="line"></div><div class="line sm"></div>
+                  <div class="mini-table"><i></i><i></i><i></i><i></i></div>
+                </div>
+                <div class="mock-card">
+                  <div class="line lg"></div><div class="line"></div><div class="line sm"></div>
+                  <div class="badge-row"><i></i><i></i><i></i></div>
+                </div>
+                <div class="mock-card">
+                  <div class="line lg"></div><div class="line"></div><div class="line"></div><div class="line sm"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-strip" aria-label="Ключевые свойства">
+      <div class="shell trust-grid">
+        <div><strong>Локальное размещение</strong><span>на сервере организации</span></div>
+        <div><strong>Единая структура</strong><span>учреждение → подразделение → отделение</span></div>
+        <div><strong>Ролевая модель</strong><span>доступ по должности и полномочиям</span></div>
+        <div><strong>Не вместо МИС</strong><span>а для процессов вокруг неё</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <div class="eyebrow">Почему PZ-Med</div>
+          <h2>Когда важная работа живёт сразу в пяти местах</h2>
+          <p>Большая часть организационных процессов медицинского учреждения не относится напрямую к ведению электронной медицинской карты. Поэтому они часто оказываются разрозненными.</p>
+        </div>
+        <div class="problem-grid">
+          <article class="problem reveal"><span>01</span><h3>Таблицы</h3><p>Отчёты собираются вручную, копируются между файлами и требуют постоянных напоминаний.</p></article>
+          <article class="problem reveal"><span>02</span><h3>Мессенджеры</h3><p>Поручения смешиваются с перепиской, теряют сроки и не дают руководителю целостной картины.</p></article>
+          <article class="problem reveal"><span>03</span><h3>Бумажные журналы</h3><p>Очереди, дежурства и локальные записи сложно одновременно видеть нескольким сотрудникам.</p></article>
+          <article class="problem reveal"><span>04</span><h3>Разрозненные файлы</h3><p>Шаблоны, инструкции и документы хранятся в разных папках и быстро расходятся по версиям.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="principle">
+      <div class="shell principle-grid">
+        <div class="principle-copy reveal">
+          <div class="eyebrow">Главный принцип</div>
+          <h2>Работает рядом с вашей МИС, а не вместо неё</h2>
+          <p>PZ-Med не требует от медицинской организации менять основную медицинскую информационную систему. Он закрывает внутренние управленческие и организационные процессы, для которых МИС обычно не предназначена.</p>
+          <p>В результате сотрудники продолжают вести медицинскую документацию в привычной системе, а административная работа получает своё структурированное пространство.</p>
+        </div>
+        <div class="system-map reveal" aria-label="Схема взаимодействия PZ-Med и МИС">
+          <div class="system-box muted"><small>Медицинский контур</small><strong>МИС</strong><span>Карты · приёмы · назначения</span></div>
+          <div class="system-link"><span>+</span></div>
+          <div class="system-box primary"><small>Управленческий контур</small><strong>PZ-Med</strong><span>Задачи · процессы · координация</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="capabilities">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <div class="eyebrow">Возможности</div>
+          <h2>Инструменты для ежедневной работы</h2>
+          <p>Модули объединены общей структурой учреждения, сотрудниками и правами доступа.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature reveal"><div class="feature-icon">✓</div><h3>Задачи</h3><p>Поручения сотрудникам и руководителям со сроками, статусами, комментариями и историей выполнения.</p></article>
+          <article class="feature reveal"><div class="feature-icon">▦</div><h3>Табличные отчёты</h3><p>Сбор данных по подразделениям и отделениям без пересылки множества отдельных Excel-файлов.</p></article>
+          <article class="feature reveal"><div class="feature-icon">◷</div><h3>Графики и дежурства</h3><p>Рабочие графики, дежурства, участники и печатные представления в одном месте.</p></article>
+          <article class="feature reveal"><div class="feature-icon">○</div><h3>Отпуска и отсутствия</h3><p>Пожелания, согласование, учёт отсутствий и доступ руководителей в рамках своей структуры.</p></article>
+          <article class="feature reveal"><div class="feature-icon">↗</div><h3>Алгоритмы и инструкции</h3><p>Локальные алгоритмы для нужных подразделений, отделений и должностей с вложениями.</p></article>
+          <article class="feature reveal"><div class="feature-icon">▤</div><h3>Документы</h3><p>Шаблоны и формирование служебных документов с автоматической подстановкой данных.</p></article>
+          <article class="feature reveal"><div class="feature-icon">≡</div><h3>Отложенная запись</h3><p>Очереди на дефицитные консультации, исследования и лечение на разных уровнях учреждения.</p></article>
+          <article class="feature reveal"><div class="feature-icon">⌁</div><h3>Внутренние сообщения</h3><p>Рабочая переписка и групповые чаты внутри собственного информационного пространства.</p></article>
+          <article class="feature reveal"><div class="feature-icon">◇</div><h3>Панели руководителей</h3><p>Актуальные задачи, показатели и события без необходимости вручную собирать их из разных источников.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section local-section" id="local">
+      <div class="shell local-grid">
+        <div class="local-visual reveal">
+          <div class="server-card">
+            <div class="server-head"><span></span><span></span><span></span></div>
+            <div class="server-row"><i></i><b>Сервер медицинской организации</b><em>online</em></div>
+            <div class="server-row"><i></i><b>Рабочая база данных</b><em>local</em></div>
+            <div class="server-row"><i></i><b>Пользовательские файлы</b><em>local</em></div>
+          </div>
+          <div class="network-line"></div>
+          <div class="network-devices"><span>ПК</span><span>ПК</span><span>ПК</span></div>
+        </div>
+        <div class="local-copy reveal">
+          <div class="eyebrow">Локальная инфраструктура</div>
+          <h2>Данные остаются внутри организации</h2>
+          <p>PZ-Med может быть установлен на локальном Linux-сервере и работать во внутренней сети учреждения. Рабочая база и пользовательские файлы размещаются на стороне заказчика.</p>
+          <ul class="check-list">
+            <li>сервер приложения находится под контролем организации;</li>
+            <li>основная работа не зависит от внешнего облачного сервиса;</li>
+            <li>права доступа учитывают структуру и полномочия сотрудников;</li>
+            <li>поставка и обновления могут передаваться офлайн-пакетами.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="implementation">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <div class="eyebrow">Внедрение</div>
+          <h2>Не «коробка ради коробки», а настройка под структуру учреждения</h2>
+        </div>
+        <div class="steps">
+          <div class="step reveal"><span>1</span><div><h3>Разбираем процессы</h3><p>Определяем структуру учреждения, роли и задачи, которые нужно перенести в систему.</p></div></div>
+          <div class="step reveal"><span>2</span><div><h3>Разворачиваем локально</h3><p>ИТ-специалист устанавливает персональную поставку на сервер организации.</p></div></div>
+          <div class="step reveal"><span>3</span><div><h3>Настраиваем доступ</h3><p>Создаётся структура подразделений и отделений, сотрудники и необходимые полномочия.</p></div></div>
+          <div class="step reveal"><span>4</span><div><h3>Запускаем пилот</h3><p>Собираем замечания реальных пользователей и адаптируем рабочие сценарии.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section audience-section">
+      <div class="shell audience-grid">
+        <div class="reveal"><div class="eyebrow">Для кого</div><h2>Одна система — разные уровни управления</h2></div>
+        <div class="audience-list reveal">
+          <div><strong>Учреждение</strong><span>общие процессы и контроль</span></div>
+          <div><strong>Подразделение</strong><span>свой рабочий контур</span></div>
+          <div><strong>Отделение</strong><span>ежедневная организация работы</span></div>
+          <div><strong>Сотрудник</strong><span>только то, что относится к его работе</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+      <div class="shell contact-card reveal">
+        <div>
+          <div class="eyebrow light">PZ-Med</div>
+          <h2>Хотите обсудить внедрение?</h2>
+          <p>Контактные данные и форма запроса будут добавлены перед публичным запуском сайта.</p>
+        </div>
+        <a class="button button-light" href="#top">Посмотреть сайт ещё раз</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <a class="brand brand-footer" href="#top"><span class="brand-mark">PZ</span><span class="brand-name">PZ-Med</span></a>
+      <p>Система управления медицинской организацией</p>
+      <span>© <span data-year></span> PZ-Med</span>
+    </div>
+  </footer>
+</body>
+</html>
