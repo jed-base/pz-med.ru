@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from flask import Response, request
+from flask import Response, jsonify, request
 from flask_login import current_user, login_user
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -24,6 +24,33 @@ application.wsgi_app = ProxyFix(
 )
 
 
+def _blocked_change_response():
+    message = (
+        "Изменение системных настроек "
+        "отключено в демонстрационной версии."
+    )
+
+    wants_json = (
+        request.is_json
+        or request.headers.get("X-Requested-With")
+        == "XMLHttpRequest"
+        or request.accept_mimetypes.best
+        == "application/json"
+    )
+
+    if wants_json:
+        return jsonify(
+            ok=False,
+            message=message,
+        ), 403
+
+    return Response(
+        message,
+        status=403,
+        content_type="text/plain; charset=utf-8",
+    )
+
+
 @application.before_request
 def _demo_auto_login_and_guard():
     user = User.query.filter_by(username=DEMO_USERNAME).first()
@@ -36,6 +63,11 @@ def _demo_auto_login_and_guard():
 
     if not current_user.is_authenticated:
         login_user(user, remember=False, force=True)
+
+    # Смена личной цветовой темы безопасна и нужна для демонстрации UI.
+    allowed_mutating_paths = {
+        "/account/theme",
+    }
 
     # В публичной песочнице разрешаем обычные рабочие сценарии,
     # но не даём менять структуру/пользователей/системные настройки.
@@ -52,14 +84,16 @@ def _demo_auto_login_and_guard():
             "/certificates",
             "/account",
         )
-        if request.path.startswith(blocked_prefixes):
-            return Response(
-                "Изменение системных настроек отключено в демонстрационной версии.",
-                status=403,
-                content_type="text/plain; charset=utf-8",
-            )
 
-        if (request.content_type or "").lower().startswith("multipart/form-data"):
+        if (
+            request.path not in allowed_mutating_paths
+            and request.path.startswith(blocked_prefixes)
+        ):
+            return _blocked_change_response()
+
+        if (request.content_type or "").lower().startswith(
+            "multipart/form-data"
+        ):
             return Response(
                 "Загрузка файлов отключена в публичной демонстрационной версии.",
                 status=403,
