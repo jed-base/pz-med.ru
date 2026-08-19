@@ -25,6 +25,8 @@ done
 
 [[ -d "$CLINIC_SOURCE/.git" ]] || { echo "Clinic Universal git checkout not found: $CLINIC_SOURCE" >&2; exit 1; }
 [[ -f "$SITE_ROOT/ops/demo/demo_wsgi.py" ]] || { echo "Run pz-site-update first; demo ops files are missing" >&2; exit 1; }
+[[ -f "$SITE_ROOT/ops/demo/seed_demo.py" ]] || { echo "Demo seed file is missing" >&2; exit 1; }
+[[ -f "$SITE_ROOT/ops/demo/enrich_demo.py" ]] || { echo "Demo enrich file is missing" >&2; exit 1; }
 [[ -f "$MAIN_NGINX_SITE" ]] || { echo "Nginx site config not found: $MAIN_NGINX_SITE" >&2; exit 1; }
 
 mkdir -p "$DEMO_ROOT"
@@ -37,8 +39,12 @@ git -C "$CLINIC_SOURCE" archive --format=tar HEAD | tar -xf - -C "$APP_DIR"
 
 cp "$SITE_ROOT/ops/demo/demo_wsgi.py" "$APP_DIR/demo_wsgi.py"
 cp "$SITE_ROOT/ops/demo/seed_demo.py" "$APP_DIR/seed_demo.py"
+cp "$SITE_ROOT/ops/demo/enrich_demo.py" "$APP_DIR/enrich_demo.py"
 cp "$SITE_ROOT/ops/demo/reset_demo.sh" /usr/local/sbin/pz-med-demo-reset
-chmod 0755 /usr/local/sbin/pz-med-demo-reset "$APP_DIR/seed_demo.py"
+chmod 0755 \
+  /usr/local/sbin/pz-med-demo-reset \
+  "$APP_DIR/seed_demo.py" \
+  "$APP_DIR/enrich_demo.py"
 
 if [[ ! -x "$VENV/bin/python" ]]; then
   python3 -m venv "$VENV"
@@ -75,6 +81,7 @@ set +a
 cd "$APP_DIR"
 "$VENV/bin/flask" --app run.py db upgrade
 "$VENV/bin/python" seed_demo.py
+"$VENV/bin/python" enrich_demo.py
 
 chown -R www-data:www-data \
   "$APP_DIR/instance" \
@@ -200,4 +207,4 @@ echo "Main entry: https://pz-med.ru/demo/"
 echo "Demo host:  https://demo.pz-med.ru/"
 echo "Source commit: $(git -C "$CLINIC_SOURCE" rev-parse HEAD)"
 echo
-echo "IMPORTANT: add demo.pz-med.ru in Jino and enable SSL for it before public test."
+echo "IMPORTANT: demo.pz-med.ru must be configured in Jino with SSL enabled."
