@@ -10,8 +10,9 @@ ENV_FILE="/etc/pz-med-demo.env"
 SERVICE_FILE="/etc/systemd/system/pz-med-demo.service"
 RESET_SERVICE_FILE="/etc/systemd/system/pz-med-demo-reset.service"
 RESET_TIMER_FILE="/etc/systemd/system/pz-med-demo-reset.timer"
-NGINX_SITE="/etc/nginx/sites-available/pz-med.ru"
-NGINX_SNIPPET="/etc/nginx/snippets/pz-med-demo.conf"
+MAIN_NGINX_SITE="/etc/nginx/sites-available/pz-med.ru"
+MAIN_NGINX_SNIPPET="/etc/nginx/snippets/pz-med-demo-redirect.conf"
+DEMO_NGINX_SITE="/etc/nginx/sites-available/demo.pz-med.ru"
 
 if [[ $EUID -ne 0 ]]; then
   echo "Run as root" >&2
@@ -24,14 +25,14 @@ done
 
 [[ -d "$CLINIC_SOURCE/.git" ]] || { echo "Clinic Universal git checkout not found: $CLINIC_SOURCE" >&2; exit 1; }
 [[ -f "$SITE_ROOT/ops/demo/demo_wsgi.py" ]] || { echo "Run pz-site-update first; demo ops files are missing" >&2; exit 1; }
-[[ -f "$NGINX_SITE" ]] || { echo "Nginx site config not found: $NGINX_SITE" >&2; exit 1; }
+[[ -f "$MAIN_NGINX_SITE" ]] || { echo "Nginx site config not found: $MAIN_NGINX_SITE" >&2; exit 1; }
 
 mkdir -p "$DEMO_ROOT"
 rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR"
 
-# Берём полноценный текущий код Clinic Universal, но без рабочей БД,
-# пользовательских файлов и без изменения репозитория clinic-universal.
+# Полная копия текущего протестированного Clinic Universal.
+# Рабочая база, uploads и .git в демо не переносятся.
 git -C "$CLINIC_SOURCE" archive --format=tar HEAD | tar -xf - -C "$APP_DIR"
 
 cp "$SITE_ROOT/ops/demo/demo_wsgi.py" "$APP_DIR/demo_wsgi.py"
@@ -124,29 +125,46 @@ RandomizedDelaySec=90
 WantedBy=timers.target
 EOF
 
-cat > "$NGINX_SNIPPET" <<'EOF'
+# /demo на основном сайте остаётся красивой точкой входа,
+# но приложение живёт на отдельном поддомене. Это важно: Clinic Universal
+# содержит абсолютные маршруты и должен работать от корня URL, как у заказчика.
+cat > "$MAIN_NGINX_SNIPPET" <<'EOF'
 location = /demo {
-    return 302 /demo/;
+    return 302 https://demo.pz-med.ru/;
 }
-
 location /demo/ {
-    proxy_pass http://127.0.0.1:5006;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Host $host;
-    proxy_set_header X-Forwarded-Proto https;
-    proxy_set_header X-Forwarded-Prefix /demo;
-    client_max_body_size 2m;
-    proxy_read_timeout 120s;
-    proxy_send_timeout 120s;
+    return 302 https://demo.pz-med.ru/;
 }
 EOF
 
-if ! grep -qF 'include /etc/nginx/snippets/pz-med-demo.conf;' "$NGINX_SITE"; then
-  sed -i '/charset utf-8;/a\    include /etc/nginx/snippets/pz-med-demo.conf;' "$NGINX_SITE"
+if ! grep -qF 'include /etc/nginx/snippets/pz-med-demo-redirect.conf;' "$MAIN_NGINX_SITE"; then
+  sed -i '/charset utf-8;/a\    include /etc/nginx/snippets/pz-med-demo-redirect.conf;' "$MAIN_NGINX_SITE"
 fi
+
+cat > "$DEMO_NGINX_SITE" <<'EOF'
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name demo.pz-med.ru;
+
+    client_max_body_size 2m;
+
+    location / {
+        proxy_pass http://127.0.0.1:5006;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+    }
+}
+EOF
+
+ln -sfn "$DEMO_NGINX_SITE" /etc/nginx/sites-enabled/demo.pz-med.ru
 
 systemctl daemon-reload
 systemctl enable --now pz-med-demo.service
@@ -163,10 +181,13 @@ systemctl is-active pz-med-demo.service
 echo "=== DEMO TIMER ==="
 systemctl is-enabled pz-med-demo-reset.timer
 
-echo "=== LOCAL HTTP CHECK ==="
-curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -H 'Host: pz-med.ru' http://127.0.0.1/demo/
+echo "=== LOCAL DEMO CHECK ==="
+curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -H 'Host: demo.pz-med.ru' http://127.0.0.1/
 
 echo
-echo "Full Clinic Universal demo deployed."
-echo "Open: https://pz-med.ru/demo/"
+echo "Full Clinic Universal demo backend deployed."
+echo "Main entry: https://pz-med.ru/demo/"
+echo "Demo host:  https://demo.pz-med.ru/"
 echo "Source commit: $(git -C "$CLINIC_SOURCE" rev-parse HEAD)"
+echo
+echo "IMPORTANT: add demo.pz-med.ru in Jino and enable SSL for it before public test."
