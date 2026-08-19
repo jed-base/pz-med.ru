@@ -17,10 +17,16 @@ from app.models import (
     DocumentField,
     Employee,
     EmployeeAbsence,
+    PatientAccountingCategory,
+    PatientAccountingHistory,
+    PatientAccountingPatient,
+    PatientDispensaryObservation,
+    PatientPassportMembership,
     Position,
     User,
     VacationPlan,
 )
+from app.modules.patient_accounting.service import get_origin_for_user
 
 
 DOCUMENT_KEY = "demo_vacation_statement"
@@ -381,6 +387,263 @@ def _ensure_vacation_document(app) -> None:
     )
 
 
+def _ensure_patient_category(
+    *,
+    kind: str,
+    name: str,
+    description: str,
+    default_interval_days: int | None,
+) -> PatientAccountingCategory:
+    category = (
+        PatientAccountingCategory.query
+        .filter_by(kind=kind, name=name)
+        .first()
+    )
+    if category is None:
+        category = PatientAccountingCategory(
+            kind=kind,
+            name=name,
+        )
+        db.session.add(category)
+
+    category.description = description
+    category.default_interval_days = (
+        default_interval_days
+        if kind == "observation"
+        else None
+    )
+    category.is_active = True
+    db.session.flush()
+    return category
+
+
+def _ensure_patient_card(
+    *,
+    owner: User,
+    card_number: str,
+    comment: str,
+) -> tuple[PatientAccountingPatient, bool]:
+    key = card_number.strip().casefold()
+    patient = (
+        PatientAccountingPatient.query
+        .filter_by(card_number_key=key)
+        .first()
+    )
+    created = patient is None
+
+    subdivision_id, department_id = get_origin_for_user(owner)
+
+    if patient is None:
+        patient = PatientAccountingPatient(
+            card_number=card_number,
+            card_number_key=key,
+            responsible_user_id=owner.id,
+            source_subdivision_id=subdivision_id,
+            source_department_id=department_id,
+            created_by_user_id=owner.id,
+        )
+        db.session.add(patient)
+        db.session.flush()
+    else:
+        patient.responsible_user_id = owner.id
+        patient.source_subdivision_id = subdivision_id
+        patient.source_department_id = department_id
+
+    patient.comment = comment
+    patient.is_active = True
+    return patient, created
+
+
+def _add_demo_history(
+    *,
+    patient: PatientAccountingPatient,
+    owner: User,
+    event_type: str,
+    message: str,
+) -> None:
+    exists = (
+        PatientAccountingHistory.query
+        .filter_by(
+            patient_id=patient.id,
+            event_type=event_type,
+            message=message,
+        )
+        .first()
+    )
+    if exists is None:
+        db.session.add(
+            PatientAccountingHistory(
+                patient_id=patient.id,
+                actor_user_id=owner.id,
+                event_type=event_type,
+                message=message,
+            )
+        )
+
+
+def _ensure_demo_patient_accounting(today: date) -> int:
+    owner = User.query.filter_by(username="demo_ivanov").first()
+    if owner is None:
+        raise RuntimeError("Demo patient accounting: demo_ivanov not found")
+
+    passport_svo = _ensure_patient_category(
+        kind="passport",
+        name="участники СВО",
+        description=(
+            "Демонстрационная категория паспорта участка для контроля "
+            "пациентов, относящихся к участникам СВО."
+        ),
+        default_interval_days=None,
+    )
+    passport_mobile = _ensure_patient_category(
+        kind="passport",
+        name="Маломобильные граждане",
+        description=(
+            "Демонстрационная категория пациентов, которым может "
+            "потребоваться доступная маршрутизация и помощь на дому."
+        ),
+        default_interval_days=None,
+    )
+    diabetes = _ensure_patient_category(
+        kind="observation",
+        name="Сахарный диабет",
+        description="Плановое диспансерное наблюдение каждые 90 дней.",
+        default_interval_days=90,
+    )
+    hypertension = _ensure_patient_category(
+        kind="observation",
+        name="Гипертоническая болезнь",
+        description="Плановое диспансерное наблюдение каждые 180 дней.",
+        default_interval_days=180,
+    )
+
+    created_cards = 0
+
+    patient, created = _ensure_patient_card(
+        owner=owner,
+        card_number="118742",
+        comment=(
+            "Демонстрационная запись. Категория паспорта участка "
+            "подтверждена, контроль сведений при плановом обращении."
+        ),
+    )
+    created_cards += int(created)
+    membership = PatientPassportMembership.query.filter_by(
+        patient_id=patient.id,
+        category_id=passport_svo.id,
+    ).first()
+    if membership is None:
+        db.session.add(
+            PatientPassportMembership(
+                patient_id=patient.id,
+                category_id=passport_svo.id,
+                added_by_user_id=owner.id,
+            )
+        )
+    _add_demo_history(
+        patient=patient,
+        owner=owner,
+        event_type="demo_seeded",
+        message="Пациент включён в категорию паспорта участка «участники СВО».",
+    )
+
+    patient, created = _ensure_patient_card(
+        owner=owner,
+        card_number="204615",
+        comment=(
+            "Демонстрационная запись. При обращении учитывать "
+            "маломобильность и необходимость доступной маршрутизации."
+        ),
+    )
+    created_cards += int(created)
+    membership = PatientPassportMembership.query.filter_by(
+        patient_id=patient.id,
+        category_id=passport_mobile.id,
+    ).first()
+    if membership is None:
+        db.session.add(
+            PatientPassportMembership(
+                patient_id=patient.id,
+                category_id=passport_mobile.id,
+                added_by_user_id=owner.id,
+            )
+        )
+    _add_demo_history(
+        patient=patient,
+        owner=owner,
+        event_type="demo_seeded",
+        message=(
+            "Пациент включён в категорию паспорта участка "
+            "«Маломобильные граждане»."
+        ),
+    )
+
+    patient, created = _ensure_patient_card(
+        owner=owner,
+        card_number="317506",
+        comment=(
+            "Демонстрационная запись. Плановый контроль показателей "
+            "углеводного обмена и соблюдения рекомендаций."
+        ),
+    )
+    created_cards += int(created)
+    observation = PatientDispensaryObservation.query.filter_by(
+        patient_id=patient.id,
+        category_id=diabetes.id,
+    ).first()
+    if observation is None:
+        observation = PatientDispensaryObservation(
+            patient_id=patient.id,
+            category_id=diabetes.id,
+            added_by_user_id=owner.id,
+        )
+        db.session.add(observation)
+    observation.comment = "Плановый контроль; требуется пригласить пациента."
+    patient.observation_status = "invite"
+    patient.next_invite_date = today
+    patient.completed_on = None
+    _add_demo_history(
+        patient=patient,
+        owner=owner,
+        event_type="demo_seeded",
+        message="Добавлено диспансерное наблюдение «Сахарный диабет».",
+    )
+
+    patient, created = _ensure_patient_card(
+        owner=owner,
+        card_number="428193",
+        comment=(
+            "Демонстрационная запись. Контроль артериального давления, "
+            "терапии и факторов сердечно-сосудистого риска."
+        ),
+    )
+    created_cards += int(created)
+    observation = PatientDispensaryObservation.query.filter_by(
+        patient_id=patient.id,
+        category_id=hypertension.id,
+    ).first()
+    if observation is None:
+        observation = PatientDispensaryObservation(
+            patient_id=patient.id,
+            category_id=hypertension.id,
+            added_by_user_id=owner.id,
+        )
+        db.session.add(observation)
+    observation.comment = "Очередной цикл наблюдения пройден без замечаний."
+    patient.observation_status = "completed"
+    patient.completed_on = today - timedelta(days=45)
+    patient.next_invite_date = patient.completed_on + timedelta(days=180)
+    _add_demo_history(
+        patient=patient,
+        owner=owner,
+        event_type="demo_seeded",
+        message="Добавлено диспансерное наблюдение «Гипертоническая болезнь».",
+    )
+
+    db.session.flush()
+    return created_cards
+
+
 def _configure_demo_clinic_head() -> None:
     clinic = (
         ClinicSettings.query
@@ -408,6 +671,7 @@ def enrich() -> None:
         _apply_demo_cases()
         _configure_demo_clinic_head()
         _ensure_vacation_document(app)
+        patient_cards = _ensure_demo_patient_accounting(today)
         db.session.commit()
 
         print(
@@ -415,6 +679,11 @@ def enrich() -> None:
             f"{changed_periods} vacation periods randomized"
         )
         print("Demo document ready: Заявление на отпуск")
+        print(
+            "Demo patient accounting ready: "
+            "2 passport categories, 2 observation categories, "
+            f"4 cards ({patient_cards} newly created)"
+        )
 
 
 if __name__ == "__main__":
