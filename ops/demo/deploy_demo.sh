@@ -29,6 +29,12 @@ done
 [[ -f "$SITE_ROOT/ops/demo/enrich_demo.py" ]] || { echo "Demo enrich file is missing" >&2; exit 1; }
 [[ -f "$MAIN_NGINX_SITE" ]] || { echo "Nginx site config not found: $MAIN_NGINX_SITE" >&2; exit 1; }
 
+# На повторном deploy старые gunicorn-workers нельзя оставлять запущенными:
+# они продолжают держать открытым старый SQLite-файл даже после rm -rf.
+# Сначала полностью останавливаем демо и таймер сброса, затем пересобираем каталог.
+systemctl stop pz-med-demo-reset.timer 2>/dev/null || true
+systemctl stop pz-med-demo.service 2>/dev/null || true
+
 mkdir -p "$DEMO_ROOT"
 rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR"
@@ -184,7 +190,8 @@ EOF
 ln -sfn "$DEMO_NGINX_SITE" /etc/nginx/sites-enabled/demo.pz-med.ru
 
 systemctl daemon-reload
-systemctl enable --now pz-med-demo.service
+systemctl enable pz-med-demo.service
+systemctl restart pz-med-demo.service
 systemctl enable --now pz-med-demo-reset.timer
 
 nginx -t
