@@ -93,7 +93,12 @@ HEAD_EMPLOYEE_INDEXES = [0, 8, 14, 20, 25, 30, 35]
 
 def category_for_position(name: str) -> str:
     lower = name.casefold()
-    if "сестр" in lower or "брат" in lower or "акушерк" in lower or "рентгенолаборант" in lower:
+    if (
+        "сестр" in lower
+        or "брат" in lower
+        or "акушерк" in lower
+        or "рентгенолаборант" in lower
+    ):
         return "nurse"
     if "врач" in lower or "фельдшер" in lower or "завед" in lower:
         return "doctor"
@@ -113,6 +118,39 @@ def next_saturday(today: date) -> date:
     if delta == 0:
         delta = 7
     return today + timedelta(days=delta)
+
+
+def ensure_absence_type(
+    *,
+    name: str,
+    code: str,
+    color: str,
+) -> AbsenceType:
+    """Переиспользует тип отсутствия, который мог быть создан миграцией."""
+    absence_type = (
+        AbsenceType.query
+        .filter(
+            db.or_(
+                AbsenceType.code == code,
+                AbsenceType.name == name,
+            )
+        )
+        .first()
+    )
+
+    if absence_type is None:
+        absence_type = AbsenceType(
+            name=name,
+            code=code,
+        )
+        db.session.add(absence_type)
+
+    absence_type.name = name
+    absence_type.code = code
+    absence_type.color = color
+    absence_type.include_in_timesheet = True
+    absence_type.is_active = True
+    return absence_type
 
 
 def seed() -> None:
@@ -138,7 +176,10 @@ def seed() -> None:
         db.session.add(clinic)
 
         subdivisions = [
-            Subdivision(name=name, short_name=name.replace("Поликлиническое ", ""))
+            Subdivision(
+                name=name,
+                short_name=name.replace("Поликлиническое ", ""),
+            )
             for name in SUBDIVISIONS
         ]
         db.session.add_all(subdivisions)
@@ -159,7 +200,11 @@ def seed() -> None:
 
         position_names = sorted({row[1] for row in EMPLOYEES})
         positions = {
-            name: Position(name=name, category=category_for_position(name), is_active=True)
+            name: Position(
+                name=name,
+                category=category_for_position(name),
+                is_active=True,
+            )
             for name in position_names
         }
         db.session.add_all(positions.values())
@@ -167,8 +212,11 @@ def seed() -> None:
 
         employees = []
         assignments = []
-        birthday_offsets = [19 + (i * 17) % 300 for i in range(len(EMPLOYEES))]
-        birthday_offsets[1] = 7  # Петрова А.А. всегда через 7 дней от текущей даты.
+        birthday_offsets = [
+            19 + (i * 17) % 300
+            for i in range(len(EMPLOYEES))
+        ]
+        birthday_offsets[1] = 7
         birthday_offsets[2] = 12
         birthday_offsets[4] = 21
         birthday_offsets[6] = 34
@@ -176,7 +224,11 @@ def seed() -> None:
         for index, (full_name, position_name, department_index) in enumerate(EMPLOYEES):
             employee = Employee(
                 full_name=full_name,
-                birth_date=birth_date_for(today, birthday_offsets[index], index),
+                birth_date=birth_date_for(
+                    today,
+                    birthday_offsets[index],
+                    index,
+                ),
                 personnel_number=f"DEMO-{index + 1:03d}",
                 email=f"employee{index + 1:02d}@demo.pz-med.local",
                 is_active=True,
@@ -211,9 +263,17 @@ def seed() -> None:
         for index, employee in enumerate(employees):
             user = User(
                 employee_id=employee.id,
-                username="demo_ivanov" if index == 0 else f"demo_user_{index + 1:02d}",
+                username=(
+                    "demo_ivanov"
+                    if index == 0
+                    else f"demo_user_{index + 1:02d}"
+                ),
                 password_hash="!",
-                role="department_manager" if index == 0 else "employee",
+                role=(
+                    "department_manager"
+                    if index == 0
+                    else "employee"
+                ),
                 is_active=True,
                 must_change_password=False,
                 login_count=4 + (index % 9),
@@ -247,7 +307,6 @@ def seed() -> None:
             )
         )
 
-        # Плановая численность по каждой должности чуть выше фактически занятой.
         for department in departments:
             counts = Counter(
                 assignment.position_id
@@ -263,7 +322,8 @@ def seed() -> None:
                     )
                 )
 
-        # У каждого сотрудника: три согласованных периода по 14 календарных дней.
+        # Каждый из 40 сотрудников имеет ровно три согласованных
+        # периода ежегодного отпуска по 14 календарных дней.
         for index, employee in enumerate(employees):
             plan = VacationPlan(
                 employee_id=employee.id,
@@ -274,6 +334,7 @@ def seed() -> None:
             )
             db.session.add(plan)
             db.session.flush()
+
             for sort_order, month in enumerate((2, 6, 10), start=1):
                 start = date(today.year, month, 2 + (index % 10))
                 db.session.add(
@@ -287,12 +348,25 @@ def seed() -> None:
                     )
                 )
 
+        # Часть стандартных типов отсутствий создаётся миграциями Clinic Universal.
+        # Не создаём дубликаты с теми же уникальными name/code.
         absence_types = {
-            "Отпуск": AbsenceType(name="Отпуск", code="О", color="#4f8fe8", include_in_timesheet=True),
-            "Больничный": AbsenceType(name="Больничный", code="Б", color="#d86b6b", include_in_timesheet=True),
-            "Обучение": AbsenceType(name="Обучение", code="ПК", color="#8f7bd8", include_in_timesheet=True),
+            "Отпуск": ensure_absence_type(
+                name="Отпуск",
+                code="О",
+                color="#4f8fe8",
+            ),
+            "Больничный": ensure_absence_type(
+                name="Больничный",
+                code="Б",
+                color="#d86b6b",
+            ),
+            "Обучение": ensure_absence_type(
+                name="Обучение",
+                code="ПК",
+                color="#8f7bd8",
+            ),
         }
-        db.session.add_all(absence_types.values())
         db.session.flush()
 
         current_absences = [
@@ -301,7 +375,13 @@ def seed() -> None:
             (7, "Обучение", 0, 2, "Повышение квалификации"),
             (18, "Отпуск", 0, 13, "Ежегодный оплачиваемый отпуск"),
         ]
-        for employee_number, type_name, start_offset, end_offset, notes in current_absences:
+        for (
+            employee_number,
+            type_name,
+            start_offset,
+            end_offset,
+            notes,
+        ) in current_absences:
             db.session.add(
                 EmployeeAbsence(
                     employee_id=employees[employee_number - 1].id,
@@ -315,9 +395,24 @@ def seed() -> None:
             )
 
         announcements = [
-            ("Совещание заведующих отделениями", "В четверг в 14:30 состоится организационное совещание. Просьба подготовить краткую информацию по текущим задачам.", 1),
-            ("Обновлены внутренние алгоритмы", "В разделе «Алгоритмы» опубликована новая версия порядка маршрутизации пациентов на диагностические исследования.", 3),
-            ("График дежурств", "Открыта запись на дежурства следующего месяца. Руководителям необходимо проверить свободные даты.", 5),
+            (
+                "Совещание заведующих отделениями",
+                "В четверг в 14:30 состоится организационное совещание. "
+                "Просьба подготовить краткую информацию по текущим задачам.",
+                1,
+            ),
+            (
+                "Обновлены внутренние алгоритмы",
+                "В разделе «Алгоритмы» опубликована новая версия порядка "
+                "маршрутизации пациентов на диагностические исследования.",
+                3,
+            ),
+            (
+                "График дежурств",
+                "Открыта запись на дежурства следующего месяца. "
+                "Руководителям необходимо проверить свободные даты.",
+                5,
+            ),
         ]
         for title, text_value, age_days in announcements:
             db.session.add(
@@ -335,13 +430,55 @@ def seed() -> None:
             )
 
         task_rows = [
-            ("Проверить сведения по отчёту за неделю", 1, 2, 0, "in_progress", "high"),
-            ("Согласовать график дежурств отделения", 1, 7, 1, "new", "normal"),
-            ("Подготовить информацию к совещанию заведующих", 9, 1, 2, "in_progress", "normal"),
-            ("Проверить актуальность локального алгоритма", 1, 1, 5, "new", "normal"),
-            ("Уточнить список сотрудников на обучение", 1, 5, 7, "new", "low"),
+            (
+                "Проверить сведения по отчёту за неделю",
+                1,
+                2,
+                0,
+                "in_progress",
+                "high",
+            ),
+            (
+                "Согласовать график дежурств отделения",
+                1,
+                7,
+                1,
+                "new",
+                "normal",
+            ),
+            (
+                "Подготовить информацию к совещанию заведующих",
+                9,
+                1,
+                2,
+                "in_progress",
+                "normal",
+            ),
+            (
+                "Проверить актуальность локального алгоритма",
+                1,
+                1,
+                5,
+                "new",
+                "normal",
+            ),
+            (
+                "Уточнить список сотрудников на обучение",
+                1,
+                5,
+                7,
+                "new",
+                "low",
+            ),
         ]
-        for title, author_no, assignee_no, due_offset, status, priority in task_rows:
+        for (
+            title,
+            author_no,
+            assignee_no,
+            due_offset,
+            status,
+            priority,
+        ) in task_rows:
             db.session.add(
                 Task(
                     title=title,
@@ -351,7 +488,10 @@ def seed() -> None:
                     assignee_employee_id=employees[assignee_no - 1].id,
                     status=status,
                     priority=priority,
-                    due_at=datetime.combine(today + timedelta(days=due_offset), time(17, 0)),
+                    due_at=datetime.combine(
+                        today + timedelta(days=due_offset),
+                        time(17, 0),
+                    ),
                     created_at=now - timedelta(days=2),
                 )
             )
@@ -377,7 +517,11 @@ def seed() -> None:
         db.session.flush()
 
         first_duty = next_saturday(today)
-        participant_sets = ((1, 2, 5), (3, 6, 7), (1, 4, 8))
+        participant_sets = (
+            (1, 2, 5),
+            (3, 6, 7),
+            (1, 4, 8),
+        )
         for week, participant_numbers in enumerate(participant_sets):
             duty_date = DutyDate(
                 duty_type_id=duty_type.id,
@@ -393,7 +537,11 @@ def seed() -> None:
             )
             db.session.add(duty_date)
             db.session.flush()
-            for order, employee_number in enumerate(participant_numbers, start=1):
+
+            for order, employee_number in enumerate(
+                participant_numbers,
+                start=1,
+            ):
                 idx = employee_number - 1
                 db.session.add(
                     DutyAssignment(
