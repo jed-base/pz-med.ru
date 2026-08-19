@@ -157,7 +157,17 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Proto https;
+
+        # Jino завершает внешний TLS и может добавлять несколько исторических
+        # заголовков схемы. Gunicorn проверяет сразу три варианта и возвращает
+        # "Contradictory scheme headers", если хотя бы один из присутствующих
+        # заголовков не совпадает с ожидаемым значением. На границе нашего
+        # доверенного nginx оставляем ровно один канонический сигнал HTTPS.
+        proxy_set_header X-Forwarded-Proto "https";
+        proxy_set_header X-Forwarded-Protocol "";
+        proxy_set_header X-Forwarded-SSL "";
+        proxy_set_header Forwarded "";
+
         proxy_read_timeout 120s;
         proxy_send_timeout 120s;
     }
