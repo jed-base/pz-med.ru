@@ -4,7 +4,6 @@ import re
 
 from flask import Response, request
 from flask_login import current_user, login_user
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from app import create_app
@@ -13,21 +12,19 @@ from app.models import User
 
 DEMO_USERNAME = "demo_ivanov"
 
-clinic_app = create_app()
-clinic_app.config.update(
-    APPLICATION_ROOT="/demo",
-    SESSION_COOKIE_PATH="/demo",
+application = create_app()
+application.config.update(
     PREFERRED_URL_SCHEME="https",
 )
-clinic_app.wsgi_app = ProxyFix(
-    clinic_app.wsgi_app,
+application.wsgi_app = ProxyFix(
+    application.wsgi_app,
     x_for=1,
     x_proto=1,
     x_host=1,
 )
 
 
-@clinic_app.before_request
+@application.before_request
 def _demo_auto_login_and_guard():
     user = User.query.filter_by(username=DEMO_USERNAME).first()
     if user is None:
@@ -77,16 +74,17 @@ _BANNER_STYLE = """
 """
 
 _BANNER = """
-<div class="pz-demo-banner"><strong>Демонстрационная версия PZ-Med</strong><span>Все сотрудники и данные вымышлены. Изменения периодически сбрасываются.</span><a href="/">Вернуться на сайт</a></div>
+<div class="pz-demo-banner"><strong>Демонстрационная версия PZ-Med</strong><span>Все сотрудники и данные вымышлены. Изменения периодически сбрасываются.</span><a href="https://pz-med.ru/">Вернуться на сайт</a></div>
 """
 
 
-@clinic_app.after_request
+@application.after_request
 def _demo_response_headers(response):
     response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     response.headers["Cache-Control"] = "no-store"
 
-    if response.status_code == 200 and response.content_type.startswith("text/html"):
+    content_type = response.content_type or ""
+    if response.status_code == 200 and content_type.startswith("text/html"):
         try:
             html = response.get_data(as_text=True)
             if "pz-demo-banner" not in html:
@@ -97,14 +95,3 @@ def _demo_response_headers(response):
         except Exception:
             pass
     return response
-
-
-def _not_found(environ, start_response):
-    response = Response("Not found", status=404)
-    return response(environ, start_response)
-
-
-application = DispatcherMiddleware(
-    _not_found,
-    {"/demo": clinic_app},
-)
