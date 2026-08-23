@@ -1,13 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
+{% set latest = office_latest_deployment(customer['id']) %}
+{% set job = office_pending_job(customer['id']) %}
+{% set message_release = office_latest_release_message(customer['id']) %}
 <div class="page-head">
   <div>
     <div class="eyebrow">{{ 'Государственная организация' if customer['org_type'] == 'state' else 'Частная организация' }}</div>
     <h1>{{ customer['name'] }}</h1>
     <p class="muted">{% if customer['inn'] %}ИНН {{ customer['inn'] }}{% endif %}{% if customer['contract_number'] %} · договор № {{ customer['contract_number'] }}{% endif %}{% if customer['contract_date'] %} от {{ fmt_date(customer['contract_date']) }}{% endif %}</p>
   </div>
-  <div class="head-actions"><a class="button button-secondary" href="{{ url_for('customer_edit', customer_id=customer['id']) }}">Редактировать</a><a class="button" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='update') }}">Добавить обновление</a></div>
+  <div class="head-actions">
+    <a class="button button-secondary" href="{{ url_for('customer_edit', customer_id=customer['id']) }}">Редактировать</a>
+    {% if not job or job['status'] not in ['queued', 'building'] %}
+      {% if latest %}
+        <a class="button" href="{{ url_for('release.request_release', customer_id=customer['id'], kind='update') }}">Сформировать обновление</a>
+      {% else %}
+        <a class="button" href="{{ url_for('release.request_release', customer_id=customer['id'], kind='initial') }}">Сформировать поставку</a>
+      {% endif %}
+    {% endif %}
+  </div>
 </div>
+
+{% if job and job['status'] in ['queued', 'building'] %}
+<section class="card release-progress" data-release-job-id="{{ job['id'] }}" data-release-job-url="{{ url_for('release.job_status', job_id=job['id']) }}">
+  <div class="release-spinner" aria-hidden="true"></div>
+  <div>
+    <div class="eyebrow">{{ 'В очереди' if job['status'] == 'queued' else 'Сборка выполняется' }}</div>
+    <h2>{{ 'Формируется первичная поставка' if job['kind'] == 'initial' else 'Формируется обновление' }}</h2>
+    <p class="muted">Можно оставить страницу открытой: после завершения она обновится автоматически. Сборка offline-архива может занять несколько минут.</p>
+  </div>
+</section>
+{% elif job and job['status'] == 'error' %}
+<section class="card release-error-card">
+  <div class="eyebrow">Ошибка последней сборки</div>
+  <h2>Архив не создан</h2>
+  <pre>{{ job['error_message'] or 'Неизвестная ошибка' }}</pre>
+  <a class="button button-secondary" href="{{ url_for('release.request_release', customer_id=customer['id'], kind=job['kind']) }}">Повторить</a>
+</section>
+{% endif %}
 
 <div class="detail-grid">
   <section class="card info-card">
@@ -15,6 +45,9 @@
     {% set support = support_badge(customer['support_until']) %}
     <dl class="detail-list">
       <div><dt>Поддержка</dt><dd><span class="badge badge-{{ support[1] }}">{{ support[0] }}</span></dd></div>
+      <div><dt>Installation ID</dt><dd class="mono">{{ customer['installation_id'] or (latest['installation_id'] if latest else '—') }}</dd></div>
+      <div><dt>License ID</dt><dd class="mono">{{ customer['license_id'] or (latest['license_id'] if latest and latest['license_id'] else '—') }}</dd></div>
+      <div><dt>Текущая версия</dt><dd class="mono strong">{{ latest['version'] if latest else 'Поставка ещё не сформирована' }}</dd></div>
       <div><dt>Контакт ИТ</dt><dd>{{ customer['it_contact'] or 'Не указан' }}</dd></div>
       <div><dt>Примечание</dt><dd>{{ customer['notes'] or '—' }}</dd></div>
     </dl>
@@ -22,8 +55,16 @@
   <section class="card info-card">
     <h2>Действия</h2>
     <div class="action-stack">
-      <a class="button" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='initial') }}">Зафиксировать первую установку</a>
-      <a class="button button-secondary" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='update') }}">Добавить обновление</a>
+      {% if not job or job['status'] not in ['queued', 'building'] %}
+        {% if latest %}
+          <a class="button" href="{{ url_for('release.request_release', customer_id=customer['id'], kind='update') }}">Сформировать обновление</a>
+        {% else %}
+          <a class="button" href="{{ url_for('release.request_release', customer_id=customer['id'], kind='initial') }}">Сформировать первую поставку</a>
+        {% endif %}
+      {% endif %}
+      {% if message_release and message_release['archive_path'] %}
+        <a class="button button-secondary" href="{{ url_for('release.download_release', deployment_id=message_release['id']) }}">Скачать последний архив</a>
+      {% endif %}
       <form method="post" action="{{ url_for('customer_delete', customer_id=customer['id']) }}" data-confirm="Удалить заказчика и всю историю поставок?">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button class="danger-link" type="submit">Удалить заказчика</button>
@@ -37,16 +78,17 @@
   {% if deployments %}
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Дата</th><th>Событие</th><th>Версия</th><th>Installation ID</th><th>Build commit</th><th>SHA-256</th><th></th></tr></thead>
+      <thead><tr><th>Дата</th><th>Событие</th><th>Версия</th><th>Installation ID</th><th>Build commit</th><th>SHA-256</th><th>Архив</th><th></th></tr></thead>
       <tbody>
       {% for deployment in deployments %}
         <tr>
           <td>{{ fmt_date(deployment['installed_on']) }}</td>
-          <td><span class="badge {{ 'badge-active' if deployment['kind'] == 'initial' else 'badge-neutral' }}">{{ 'Первая установка' if deployment['kind'] == 'initial' else 'Обновление' }}</span>{% if deployment['notes'] %}<span class="subtext">{{ deployment['notes'] }}</span>{% endif %}</td>
+          <td><span class="badge {{ 'badge-active' if deployment['kind'] == 'initial' else 'badge-neutral' }}">{{ 'Первая поставка' if deployment['kind'] == 'initial' else 'Обновление' }}</span>{% if deployment['from_version'] %}<span class="subtext">с {{ deployment['from_version'] }}</span>{% endif %}{% if deployment['notes'] %}<span class="subtext">{{ deployment['notes'] }}</span>{% endif %}</td>
           <td class="mono strong">{{ deployment['version'] }}</td>
           <td class="mono">{{ deployment['installation_id'] or '—' }}</td>
           <td class="mono code-cell">{{ deployment['build_commit'] or '—' }}</td>
           <td class="mono code-cell">{{ deployment['sha256'] or '—' }}</td>
+          <td>{% if deployment['archive_path'] %}<a class="text-link" href="{{ url_for('release.download_release', deployment_id=deployment['id']) }}">Скачать</a>{% else %}—{% endif %}</td>
           <td class="row-actions"><a href="{{ url_for('deployment_edit', deployment_id=deployment['id']) }}">Изменить</a><form method="post" action="{{ url_for('deployment_delete', deployment_id=deployment['id']) }}" data-confirm="Удалить эту запись?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Удалить</button></form></td>
         </tr>
       {% endfor %}
@@ -54,7 +96,22 @@
     </table>
   </div>
   {% else %}
-    <div class="empty"><strong>Поставки ещё не зафиксированы.</strong><span>Добавь первоначальную установку: версию, дату и Installation ID.</span></div>
+    <div class="empty"><strong>Поставки ещё не сформированы.</strong><span>Нажми «Сформировать первую поставку» — версия, ID, commit и SHA-256 заполнятся автоматически.</span></div>
   {% endif %}
 </section>
+
+{% if message_release and message_release['release_message'] %}
+<section class="card customer-message-card">
+  <div class="section-head">
+    <div><div class="eyebrow">Готово к отправке</div><h2>Текст для заказчика · PZ-Med {{ message_release['version'] }}</h2></div>
+    <div class="head-actions">
+      <button class="button button-secondary" type="button" data-copy-target="customer-release-message">Копировать текст</button>
+      {% if message_release['archive_path'] %}<a class="button" href="{{ url_for('release.download_release', deployment_id=message_release['id']) }}">Скачать архив</a>{% endif %}
+    </div>
+  </div>
+  <div class="message-body-wrap">
+    <textarea id="customer-release-message" class="customer-message" readonly rows="18">{{ message_release['release_message'] }}</textarea>
+  </div>
+</section>
+{% endif %}
 {% endblock %}
