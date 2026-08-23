@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Вход · Поставки PZ-Med{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <section class="card auth-card">
+    <div class="eyebrow">Внутренний раздел</div>
+    <h1>Поставки PZ-Med</h1>
+    <p class="muted">Реестр заказчиков, установленных версий и обновлений.</p>
+    <form method="post" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Логин<input name="username" autocomplete="username" required {% if blocked %}disabled{% endif %}></label>
+      <label>Пароль<input type="password" name="password" autocomplete="current-password" required {% if blocked %}disabled{% endif %}></label>
+      <button class="button" type="submit" {% if blocked %}disabled{% endif %}>Войти</button>
+    </form>
+  </section>
+</div>
+{% endblock %}
