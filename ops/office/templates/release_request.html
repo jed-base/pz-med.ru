@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Первая поставка' if kind == 'initial' else 'Обновление' }} · PZ-Med{% endblock %}
+{% block content %}
+<div class="page-head compact">
+  <div>
+    <div class="eyebrow">{{ customer['name'] }}</div>
+    <h1>{{ 'Сформировать первую поставку' if kind == 'initial' else 'Сформировать обновление' }}</h1>
+    <p class="muted">Архив будет собран персонально для этой организации, а технические поля карточки заполнятся автоматически.</p>
+  </div>
+  <a class="text-link" href="{{ url_for('customer_detail', customer_id=customer['id']) }}">← Назад</a>
+</div>
+
+{% if status and status['error_message'] %}
+<div class="flash flash-error">Release-worker: {{ status['error_message'] }}</div>
+{% endif %}
+
+<section class="card form-card release-request-card">
+  <div class="release-summary">
+    <div><span>Версия в исходниках</span><strong class="mono">{{ status['source_version'] if status and status['source_version'] else '—' }}</strong></div>
+    <div><span>Официальная версия</span><strong class="mono">{{ status['official_version'] if status and status['official_version'] else 'ещё не выпускалась' }}</strong></div>
+    <div><span>Текущий commit</span><strong class="mono code-cell">{{ status['source_commit'][:12] if status and status['source_commit'] else '—' }}</strong></div>
+  </div>
+
+  {% if source_dirty %}
+    <div class="flash flash-error">В release-репозитории есть незакоммиченные изменения. Сначала нужно привести рабочую копию в чистое состояние.</div>
+  {% endif %}
+
+  <form method="post" class="form-stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    {% if status and not status['official_commit'] %}
+      <div class="release-choice selected-static">
+        <strong>Первая официальная версия: {{ status['source_version'] or '1.0.0' }}</strong>
+        <span>Первый коммерческий релиз зафиксирует текущий Git commit как официальную версию.</span>
+      </div>
+    {% elif source_changed %}
+      <div>
+        <div class="field-title">Код изменился после {{ status['official_version'] }}. Выбери значимость релиза:</div>
+        <div class="release-kinds">
+          <label class="release-choice">
+            <input type="radio" name="bump_kind" value="patch" required>
+            <span><strong>Исправления · {{ office_next_version(status['official_version'], 'patch') }}</strong><small>Ошибки, небольшие UI-правки, оптимизация без новой заметной функции.</small></span>
+          </label>
+          <label class="release-choice">
+            <input type="radio" name="bump_kind" value="minor" required>
+            <span><strong>Новая функциональность · {{ office_next_version(status['official_version'], 'minor') }}</strong><small>Новый модуль или возможность при сохранении совместимости.</small></span>
+          </label>
+          <label class="release-choice">
+            <input type="radio" name="bump_kind" value="major" required>
+            <span><strong>Крупное несовместимое изменение · {{ office_next_version(status['official_version'], 'major') }}</strong><small>Существенная смена архитектуры или правил эксплуатации.</small></span>
+          </label>
+        </div>
+      </div>
+    {% else %}
+      <div class="release-choice selected-static">
+        <strong>Будет собрана текущая официальная версия {{ official_version or '—' }}</strong>
+        <span>Текущий код совпадает с уже зафиксированным официальным релизом, поэтому повышать номер не нужно.</span>
+      </div>
+    {% endif %}
+
+    {% if kind == 'update' and latest %}
+      <div class="release-from">Сейчас у заказчика: <strong class="mono">{{ latest['version'] }}</strong></div>
+    {% endif %}
+
+    <div class="form-actions">
+      <button class="button" type="submit" {% if source_dirty or not status or status['error_message'] %}disabled{% endif %}>
+        {{ 'Сформировать поставку' if kind == 'initial' else 'Сформировать обновление' }}
+      </button>
+    </div>
+  </form>
+</section>
+{% endblock %}
