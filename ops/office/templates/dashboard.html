@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% set release_status = office_release_status() %}
 <div class="page-head">
   <div>
     <div class="eyebrow">Внутренний реестр</div>
@@ -8,6 +9,15 @@
   </div>
   <a class="button" href="{{ url_for('customer_new') }}">Добавить заказчика</a>
 </div>
+
+{% if release_status %}
+<div class="release-version-strip">
+  <span>Официальная версия:</span>
+  <strong class="mono">{{ release_status['official_version'] or release_status['source_version'] or '—' }}</strong>
+  {% if release_status['official_commit'] %}<span class="muted">commit {{ release_status['official_commit'][:12] }}</span>{% endif %}
+  {% if release_status['source_changed'] %}<span class="badge badge-warning">есть новые изменения</span>{% elif release_status['source_dirty'] %}<span class="badge badge-expired">release-копия изменена локально</span>{% elif release_status['official_commit'] %}<span class="badge badge-active">актуальный релиз</span>{% else %}<span class="badge badge-neutral">первый релиз ещё не сформирован</span>{% endif %}
+</div>
+{% endif %}
 
 <div class="stats-grid">
   <div class="stat"><strong>{{ total_customers }}</strong><span>заказчиков</span></div>
@@ -55,7 +65,7 @@
     </table>
   </div>
   {% else %}
-  <div class="empty"><strong>Записей пока нет.</strong><span>{% if search %}По заданному запросу ничего не найдено.{% else %}Добавь первого заказчика и зафиксируй первоначальную поставку.{% endif %}</span></div>
+  <div class="empty"><strong>Записей пока нет.</strong><span>{% if search %}По заданному запросу ничего не найдено.{% else %}Добавь первого заказчика и сформируй персональную поставку.{% endif %}</span></div>
   {% endif %}
 </section>
 {% endblock %}
