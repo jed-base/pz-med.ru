@@ -4,16 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#0d5c46">
   <title>{% block title %}Поставки PZ-Med{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='office.css') }}">
-  <script defer src="{{ url_for('static', filename='office.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='office.css') }}?v=20260824-1">
+  <script defer src="{{ url_for('static', filename='office.js') }}?v=20260824-1"></script>
 </head>
 <body>
   <header class="topbar">
     <div class="shell topbar-inner">
-      <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">PZ</span><span>PZ-Med · Поставки</span></a>
+      <a class="brand" href="{{ url_for('dashboard') }}" aria-label="PZ-Med — реестр поставок">
+        <span class="brand-mark" aria-hidden="true">PZ</span>
+        <span class="brand-name">PZ-Med · Поставки</span>
+      </a>
       {% if session.get('office_authenticated') %}
-      <nav class="nav">
+      <nav class="nav" aria-label="Навигация реестра поставок">
         <a href="{{ url_for('dashboard') }}">Заказчики</a>
         <a href="{{ url_for('export_csv') }}">Экспорт CSV</a>
         <a href="{{ url_for('account') }}">Пароль</a>
