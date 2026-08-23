@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head compact">
+  <div><div class="eyebrow">{{ customer['name'] }}</div><h1>{{ 'Редактирование поставки' if deployment else 'Новая запись о поставке' }}</h1></div>
+  <a class="text-link" href="{{ url_for('customer_detail', customer_id=customer['id']) }}">← Назад</a>
+</div>
+<section class="card form-card">
+  <form method="post" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Тип записи<select name="kind"><option value="initial" {% if request.form.get('kind', deployment['kind'] if deployment else default_kind) == 'initial' %}selected{% endif %}>Первая установка</option><option value="update" {% if request.form.get('kind', deployment['kind'] if deployment else default_kind) == 'update' %}selected{% endif %}>Обновление</option></select></label>
+    <label>Версия PZ-Med<input name="version" required placeholder="например 1.0.0" value="{{ request.form.get('version', deployment['version'] if deployment else '') }}"></label>
+    <label>Дата установки<input type="date" name="installed_on" required value="{{ request.form.get('installed_on', deployment['installed_on'] if deployment else today) }}"></label>
+    <label>Installation ID<input name="installation_id" value="{{ request.form.get('installation_id', deployment['installation_id'] if deployment and deployment['installation_id'] else default_installation_id) }}" placeholder="PZM-..."></label>
+    <label class="span-2">Build commit<input class="mono" name="build_commit" value="{{ request.form.get('build_commit', deployment['build_commit'] if deployment and deployment['build_commit'] else '') }}" placeholder="Git commit"></label>
+    <label class="span-2">SHA-256 поставки<input class="mono" name="sha256" value="{{ request.form.get('sha256', deployment['sha256'] if deployment and deployment['sha256'] else '') }}" placeholder="Необязательно"></label>
+    <label class="span-2">Примечание<textarea name="notes" rows="4" placeholder="Например: обновление табличных отчётов и исправление загрузки логотипа">{{ request.form.get('notes', deployment['notes'] if deployment and deployment['notes'] else '') }}</textarea></label>
+    <div class="form-actions span-2"><button class="button" type="submit">Сохранить запись</button></div>
+  </form>
+</section>
+{% endblock %}
