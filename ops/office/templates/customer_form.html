@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head compact">
+  <div><div class="eyebrow">Заказчик</div><h1>{{ 'Редактирование' if customer else 'Новый заказчик' }}</h1></div>
+  <a class="text-link" href="{{ url_for('customer_detail', customer_id=customer['id']) if customer else url_for('dashboard') }}">← Назад</a>
+</div>
+<section class="card form-card">
+  <form method="post" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="span-2">Наименование организации<input name="name" required value="{{ request.form.get('name', customer['name'] if customer else '') }}"></label>
+    <label>Тип организации<select name="org_type"><option value="state" {% if request.form.get('org_type', customer['org_type'] if customer else 'state') == 'state' %}selected{% endif %}>Государственная</option><option value="private" {% if request.form.get('org_type', customer['org_type'] if customer else '') == 'private' %}selected{% endif %}>Частная</option></select></label>
+    <label>ИНН<input name="inn" inputmode="numeric" value="{{ request.form.get('inn', customer['inn'] if customer and customer['inn'] else '') }}"></label>
+    <label>№ договора<input name="contract_number" value="{{ request.form.get('contract_number', customer['contract_number'] if customer and customer['contract_number'] else '') }}"></label>
+    <label>Дата договора<input type="date" name="contract_date" value="{{ request.form.get('contract_date', customer['contract_date'] if customer and customer['contract_date'] else '') }}"></label>
+    <label>Поддержка до<input type="date" name="support_until" value="{{ request.form.get('support_until', customer['support_until'] if customer and customer['support_until'] else '') }}"></label>
+    <label>Контакт ИТ / ответственного<input name="it_contact" value="{{ request.form.get('it_contact', customer['it_contact'] if customer and customer['it_contact'] else '') }}" placeholder="Необязательно"></label>
+    <label class="span-2">Примечание<textarea name="notes" rows="4">{{ request.form.get('notes', customer['notes'] if customer and customer['notes'] else '') }}</textarea></label>
+    <div class="form-actions span-2"><button class="button" type="submit">Сохранить</button></div>
+  </form>
+</section>
+{% endblock %}
