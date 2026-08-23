@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">{{ 'Государственная организация' if customer['org_type'] == 'state' else 'Частная организация' }}</div>
+    <h1>{{ customer['name'] }}</h1>
+    <p class="muted">{% if customer['inn'] %}ИНН {{ customer['inn'] }}{% endif %}{% if customer['contract_number'] %} · договор № {{ customer['contract_number'] }}{% endif %}{% if customer['contract_date'] %} от {{ fmt_date(customer['contract_date']) }}{% endif %}</p>
+  </div>
+  <div class="head-actions"><a class="button button-secondary" href="{{ url_for('customer_edit', customer_id=customer['id']) }}">Редактировать</a><a class="button" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='update') }}">Добавить обновление</a></div>
+</div>
+
+<div class="detail-grid">
+  <section class="card info-card">
+    <h2>Карточка заказчика</h2>
+    {% set support = support_badge(customer['support_until']) %}
+    <dl class="detail-list">
+      <div><dt>Поддержка</dt><dd><span class="badge badge-{{ support[1] }}">{{ support[0] }}</span></dd></div>
+      <div><dt>Контакт ИТ</dt><dd>{{ customer['it_contact'] or 'Не указан' }}</dd></div>
+      <div><dt>Примечание</dt><dd>{{ customer['notes'] or '—' }}</dd></div>
+    </dl>
+  </section>
+  <section class="card info-card">
+    <h2>Действия</h2>
+    <div class="action-stack">
+      <a class="button" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='initial') }}">Зафиксировать первую установку</a>
+      <a class="button button-secondary" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='update') }}">Добавить обновление</a>
+      <form method="post" action="{{ url_for('customer_delete', customer_id=customer['id']) }}" onsubmit="return confirm('Удалить заказчика и всю историю поставок?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="danger-link" type="submit">Удалить заказчика</button>
+      </form>
+    </div>
+  </section>
+</div>
+
+<section class="card table-card">
+  <div class="section-head"><div><div class="eyebrow">Хронология</div><h2>История поставок и обновлений</h2></div></div>
+  {% if deployments %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Дата</th><th>Событие</th><th>Версия</th><th>Installation ID</th><th>Build commit</th><th>SHA-256</th><th></th></tr></thead>
+      <tbody>
+      {% for deployment in deployments %}
+        <tr>
+          <td>{{ fmt_date(deployment['installed_on']) }}</td>
+          <td><span class="badge {{ 'badge-active' if deployment['kind'] == 'initial' else 'badge-neutral' }}">{{ 'Первая установка' if deployment['kind'] == 'initial' else 'Обновление' }}</span>{% if deployment['notes'] %}<span class="subtext">{{ deployment['notes'] }}</span>{% endif %}</td>
+          <td class="mono strong">{{ deployment['version'] }}</td>
+          <td class="mono">{{ deployment['installation_id'] or '—' }}</td>
+          <td class="mono code-cell">{{ deployment['build_commit'] or '—' }}</td>
+          <td class="mono code-cell">{{ deployment['sha256'] or '—' }}</td>
+          <td class="row-actions"><a href="{{ url_for('deployment_edit', deployment_id=deployment['id']) }}">Изменить</a><form method="post" action="{{ url_for('deployment_delete', deployment_id=deployment['id']) }}" onsubmit="return confirm('Удалить эту запись?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Удалить</button></form></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty"><strong>Поставки ещё не зафиксированы.</strong><span>Добавь первоначальную установку: версию, дату и Installation ID.</span></div>
+  {% endif %}
+</section>
+{% endblock %}
