@@ -1,0 +1,4 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-wrap"><section class="card auth-card"><div class="eyebrow">Ошибка {{ code }}</div><h1>{{ message }}</h1><a class="button" href="{{ url_for('dashboard') if session.get('office_authenticated') else url_for('login') }}">Вернуться</a></section></div>
+{% endblock %}
