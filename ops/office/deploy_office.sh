@@ -110,7 +110,10 @@ location = /office {
     return 302 /office/;
 }
 
-location /office/ {
+# ^~ is intentional: the main public site has generic static-file locations.
+# Without ^~ requests such as /office/static/office.css can be intercepted by
+# those regex locations and the private office is rendered without CSS/JS.
+location ^~ /office/ {
     proxy_pass http://127.0.0.1:$PORT;
     proxy_http_version 1.1;
     proxy_set_header Host \$host;
@@ -148,7 +151,13 @@ echo "=== OFFICE SERVICE ==="
 systemctl is-active pz-med-office.service
 
 echo "=== LOCAL CHECK ==="
-curl -sS -o /dev/null -w 'HTTP %{http_code}\n' -H 'Host: pz-med.ru' http://127.0.0.1/office/
+curl -sS -o /dev/null -w 'Office: HTTP %{http_code}\n' -H 'Host: pz-med.ru' http://127.0.0.1/office/
+CSS_STATUS=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Host: pz-med.ru' http://127.0.0.1/office/static/office.css)
+echo "CSS:    HTTP $CSS_STATUS"
+if [[ "$CSS_STATUS" != "200" ]]; then
+  echo "Office CSS is not being served correctly" >&2
+  exit 1
+fi
 
 echo
 echo "PZ-Med office deployed: https://pz-med.ru/office/"
