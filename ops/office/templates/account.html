@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head compact"><div><div class="eyebrow">Безопасность</div><h1>Смена пароля</h1><p class="muted">Логин: {{ office_username }}</p></div><a class="text-link" href="{{ url_for('dashboard') }}">← Назад</a></div>
+<section class="card form-card narrow">
+  <form method="post" class="form-stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Текущий пароль<input type="password" name="current_password" autocomplete="current-password" required></label>
+    <label>Новый пароль<input type="password" name="new_password" autocomplete="new-password" minlength="12" required><span class="hint">Минимум 12 символов.</span></label>
+    <label>Повторите новый пароль<input type="password" name="new_password_confirmation" autocomplete="new-password" minlength="12" required></label>
+    <button class="button" type="submit">Изменить пароль</button>
+  </form>
+</section>
+{% endblock %}
