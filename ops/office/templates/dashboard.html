@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Внутренний реестр</div>
+    <h1>Поставки PZ-Med</h1>
+    <p class="muted">Какая версия установлена у каждого заказчика и когда выполнялись обновления.</p>
+  </div>
+  <a class="button" href="{{ url_for('customer_new') }}">Добавить заказчика</a>
+</div>
+
+<div class="stats-grid">
+  <div class="stat"><strong>{{ total_customers }}</strong><span>заказчиков</span></div>
+  <div class="stat"><strong>{{ active_support }}</strong><span>на поддержке</span></div>
+  <div class="stat"><strong>{{ total_updates }}</strong><span>обновлений зафиксировано</span></div>
+</div>
+
+<form method="get" class="search-row">
+  <input type="search" name="q" value="{{ search }}" placeholder="Поиск по организации, ИНН или договору">
+  <button class="button button-secondary" type="submit">Найти</button>
+  {% if search %}<a class="text-link" href="{{ url_for('dashboard') }}">Сбросить</a>{% endif %}
+</form>
+
+<section class="card table-card">
+  {% if customers %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Заказчик</th>
+          <th>Тип</th>
+          <th>Installation ID</th>
+          <th>Первая версия</th>
+          <th>Дата установки</th>
+          <th>Текущая версия</th>
+          <th>Последнее обновление</th>
+          <th>Поддержка</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for customer in customers %}
+        {% set support = support_badge(customer['support_until']) %}
+        <tr>
+          <td><a class="customer-link" href="{{ url_for('customer_detail', customer_id=customer['id']) }}">{{ customer['name'] }}</a>{% if customer['inn'] %}<span class="subtext">ИНН {{ customer['inn'] }}</span>{% endif %}</td>
+          <td><span class="badge badge-neutral">{{ 'Гос.' if customer['org_type'] == 'state' else 'Частная' }}</span></td>
+          <td class="mono">{{ customer['installation_id'] or '—' }}</td>
+          <td class="mono strong">{{ customer['initial_version'] or '—' }}</td>
+          <td>{{ fmt_date(customer['initial_installed_on']) }}</td>
+          <td class="mono strong">{{ customer['current_version'] or '—' }}</td>
+          <td>{{ fmt_date(customer['last_update_on']) }}{% if customer['update_count'] %}<span class="subtext">{{ customer['update_count'] }} обновл.</span>{% endif %}</td>
+          <td><span class="badge badge-{{ support[1] }}">{{ support[0] }}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty"><strong>Записей пока нет.</strong><span>{% if search %}По заданному запросу ничего не найдено.{% else %}Добавь первого заказчика и зафиксируй первоначальную поставку.{% endif %}</span></div>
+  {% endif %}
+</section>
+{% endblock %}
