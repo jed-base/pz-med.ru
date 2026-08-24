@@ -1,0 +1,49 @@
+name: Office checks
+
+on:
+  pull_request:
+    paths:
+      - 'ops/office/**'
+      - '.github/workflows/office-checks.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/office/**'
+      - '.github/workflows/office-checks.yml'
+
+jobs:
+  office:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Office dependencies
+        run: python -m pip install -r ops/office/requirements.txt
+      - name: Compile Office Python
+        run: python -m py_compile ops/office/*.py
+      - name: Import Office application
+        env:
+          SECRET_KEY: test-secret-key
+          OFFICE_PASSWORD_HASH: test-password-hash
+          OFFICE_DB_PATH: /tmp/pz-med-office-check.sqlite3
+          OFFICE_RELEASES_DIR: /tmp/pz-med-office-releases
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'ops/office')
+          import office_entry
+          rules = {rule.rule for rule in office_entry.app.url_map.iter_rules()}
+          required = {
+              '/office/',
+              '/office/customers/<int:customer_id>/release/<kind>',
+              '/office/customers/<int:customer_id>/deployments/new',
+          }
+          missing = required - rules
+          if missing:
+              raise SystemExit(f'Missing Office routes: {sorted(missing)}')
+          print('Office import/routes: OK')
+          PY
