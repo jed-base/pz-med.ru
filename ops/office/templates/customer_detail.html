@@ -58,8 +58,10 @@
       {% if not job or job['status'] not in ['queued', 'building'] %}
         {% if latest %}
           <a class="button" href="{{ url_for('release.request_release', customer_id=customer['id'], kind='update') }}">Сформировать обновление</a>
+          <a class="button button-secondary" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='update') }}">Добавить существующее обновление</a>
         {% else %}
           <a class="button" href="{{ url_for('release.request_release', customer_id=customer['id'], kind='initial') }}">Сформировать первую поставку</a>
+          <a class="button button-secondary" href="{{ url_for('deployment_new', customer_id=customer['id'], kind='initial') }}">Добавить существующую поставку</a>
         {% endif %}
       {% endif %}
       {% if message_release and message_release['archive_path'] %}
@@ -96,7 +98,7 @@
     </table>
   </div>
   {% else %}
-    <div class="empty"><strong>Поставки ещё не сформированы.</strong><span>Нажми «Сформировать первую поставку» — версия, ID, commit и SHA-256 заполнятся автоматически.</span></div>
+    <div class="empty"><strong>Поставок пока нет.</strong><span>Можно сформировать новый архив автоматически или добавить сведения об уже установленной поставке кнопкой в блоке «Действия».</span></div>
   {% endif %}
 </section>
 
