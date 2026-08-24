@@ -28,6 +28,21 @@
   <form method="post" class="form-stack">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
+    {% if kind == 'update' %}
+      <div>
+        <div class="field-title">Идентичность установленного экземпляра</div>
+        <p class="muted">Для ранее установленной организации эти два ID должны совпадать с уже выданной поставкой. Они сохраняются один раз и используются во всех следующих обновлениях.</p>
+        <div class="form-grid" style="margin-top: 14px;">
+          <label>Installation ID
+            <input class="mono" name="installation_id" required value="{{ existing_installation_id }}" placeholder="CU-20260817-XXXXXXXXXX">
+          </label>
+          <label>License ID
+            <input class="mono" name="license_id" required value="{{ existing_license_id }}" placeholder="CUL-XXXXXXXXXXXXXXXX">
+          </label>
+        </div>
+      </div>
+    {% endif %}
+
     {% if status and not status['official_commit'] %}
       <div class="release-choice selected-static">
         <strong>Первая официальная версия: {{ status['source_version'] or '1.0.0' }}</strong>
