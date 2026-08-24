@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import sqlite3
 
 from flask import (
@@ -15,6 +16,8 @@ from flask import (
 )
 
 OFFICE_PREFIX = "/office"
+_INSTALLATION_ID_RE = re.compile(r"^[A-Z0-9][A-Z0-9-]{5,79}$")
+_LICENSE_ID_RE = re.compile(r"^CUL-[A-F0-9]{16}$")
 
 
 def _connect(db_path: Path) -> sqlite3.Connection:
@@ -119,6 +122,20 @@ def _next_version(version: str, kind: str) -> str:
     return f"{major}.{minor}.{patch}"
 
 
+def _normalize_installation_id(value: str) -> str:
+    normalized = str(value or "").strip().upper()
+    if not _INSTALLATION_ID_RE.fullmatch(normalized):
+        raise ValueError("Installation ID имеет некорректный формат")
+    return normalized
+
+
+def _normalize_license_id(value: str) -> str:
+    normalized = str(value or "").strip().upper()
+    if not _LICENSE_ID_RE.fullmatch(normalized):
+        raise ValueError("License ID должен иметь формат CUL-XXXXXXXXXXXXXXXX")
+    return normalized
+
+
 def register_release_features(
     app,
     *,
@@ -209,15 +226,76 @@ def register_release_features(
         official_version = (status["official_version"] if status else None) or (
             status["source_version"] if status else None
         )
+        existing_installation_id = str(
+            (customer["installation_id"] if customer else None)
+            or (latest["installation_id"] if latest else None)
+            or ""
+        ).strip()
+        existing_license_id = str(
+            (customer["license_id"] if customer else None)
+            or (latest["license_id"] if latest else None)
+            or ""
+        ).strip()
 
         if request.method == "POST":
             if source_dirty:
                 flash("Release-репозиторий содержит незакоммиченные изменения. Сборка заблокирована.", "error")
                 return redirect(request.url)
+
+            if kind == "update":
+                try:
+                    installation_id = _normalize_installation_id(
+                        request.form.get("installation_id") or existing_installation_id
+                    )
+                    license_id = _normalize_license_id(
+                        request.form.get("license_id") or existing_license_id
+                    )
+                except ValueError as error:
+                    flash(str(error), "error")
+                    return redirect(request.url)
+
+                conflict = get_db().execute(
+                    """
+                    SELECT id, installation_id, license_id FROM deployments
+                    WHERE customer_id = ? AND (
+                        (COALESCE(installation_id, '') <> '' AND installation_id <> ?)
+                        OR (COALESCE(license_id, '') <> '' AND license_id <> ?)
+                    ) LIMIT 1
+                    """,
+                    (customer_id, installation_id, license_id),
+                ).fetchone()
+                if conflict:
+                    flash(
+                        "В истории этой организации уже есть другая пара Installation ID / License ID. "
+                        "Сборка заблокирована до исправления истории.",
+                        "error",
+                    )
+                    return redirect(request.url)
+
+                get_db().execute(
+                    """
+                    UPDATE customers SET installation_id = ?, license_id = ?, updated_at = ?
+                    WHERE id = ?
+                    """,
+                    (installation_id, license_id, now_iso(), customer_id),
+                )
+                get_db().execute(
+                    """
+                    UPDATE deployments SET
+                        installation_id = CASE
+                            WHEN COALESCE(installation_id, '') = '' THEN ? ELSE installation_id END,
+                        license_id = CASE
+                            WHEN COALESCE(license_id, '') = '' THEN ? ELSE license_id END
+                    WHERE customer_id = ?
+                    """,
+                    (installation_id, license_id, customer_id),
+                )
+
             bump_kind = (request.form.get("bump_kind") or "").strip() or None
             if source_changed and status and status["official_commit"]:
                 if bump_kind not in {"patch", "minor", "major"}:
                     flash("Выбери значимость новой версии.", "error")
+                    get_db().rollback()
                     return redirect(request.url)
             else:
                 bump_kind = None
@@ -243,6 +321,8 @@ def register_release_features(
             source_changed=source_changed,
             source_dirty=source_dirty,
             official_version=official_version,
+            existing_installation_id=existing_installation_id,
+            existing_license_id=existing_license_id,
         )
 
     @bp.get(f"{OFFICE_PREFIX}/release-jobs/<int:job_id>/status")
