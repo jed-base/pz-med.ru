@@ -29,6 +29,7 @@ done
 [[ -f "$SITE_ROOT/ops/demo/enrich_demo.py" ]] || { echo "Demo enrich file is missing" >&2; exit 1; }
 [[ -f "$SITE_ROOT/ops/demo/enrich_deferred_demo.py" ]] || { echo "Deferred demo enrich file is missing" >&2; exit 1; }
 [[ -f "$SITE_ROOT/ops/demo/enrich_showcase_demo.py" ]] || { echo "Showcase demo enrich file is missing" >&2; exit 1; }
+[[ -f "$SITE_ROOT/ops/demo/validate_duty_demo.py" ]] || { echo "Demo duty validation file is missing" >&2; exit 1; }
 [[ -f "$MAIN_NGINX_SITE" ]] || { echo "Nginx site config not found: $MAIN_NGINX_SITE" >&2; exit 1; }
 
 # На повторном deploy старые gunicorn-workers нельзя оставлять запущенными:
@@ -50,13 +51,15 @@ cp "$SITE_ROOT/ops/demo/seed_demo.py" "$APP_DIR/seed_demo.py"
 cp "$SITE_ROOT/ops/demo/enrich_demo.py" "$APP_DIR/enrich_demo.py"
 cp "$SITE_ROOT/ops/demo/enrich_deferred_demo.py" "$APP_DIR/enrich_deferred_demo.py"
 cp "$SITE_ROOT/ops/demo/enrich_showcase_demo.py" "$APP_DIR/enrich_showcase_demo.py"
+cp "$SITE_ROOT/ops/demo/validate_duty_demo.py" "$APP_DIR/validate_duty_demo.py"
 cp "$SITE_ROOT/ops/demo/reset_demo.sh" /usr/local/sbin/pz-med-demo-reset
 chmod 0755 \
   /usr/local/sbin/pz-med-demo-reset \
   "$APP_DIR/seed_demo.py" \
   "$APP_DIR/enrich_demo.py" \
   "$APP_DIR/enrich_deferred_demo.py" \
-  "$APP_DIR/enrich_showcase_demo.py"
+  "$APP_DIR/enrich_showcase_demo.py" \
+  "$APP_DIR/validate_duty_demo.py"
 
 if [[ ! -x "$VENV/bin/python" ]]; then
   python3 -m venv "$VENV"
@@ -96,6 +99,7 @@ cd "$APP_DIR"
 "$VENV/bin/python" enrich_demo.py
 "$VENV/bin/python" enrich_deferred_demo.py
 "$VENV/bin/python" enrich_showcase_demo.py
+"$VENV/bin/python" validate_duty_demo.py
 
 chown -R www-data:www-data \
   "$APP_DIR/instance" \
