@@ -27,6 +27,7 @@ cd "$APP_DIR"
 "$VENV/bin/python" seed_demo.py
 "$VENV/bin/python" enrich_demo.py
 "$VENV/bin/python" enrich_deferred_demo.py
+"$VENV/bin/python" enrich_showcase_demo.py
 
 chown -R www-data:www-data \
   "$APP_DIR/instance" \
