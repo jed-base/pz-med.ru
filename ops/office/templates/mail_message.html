@@ -7,11 +7,26 @@
     <div class="eyebrow">{{ folder_label }}</div>
     <h1>{{ subject }}</h1>
   </div>
-  <div class="head-actions">
+  <div class="head-actions mail-message-actions">
     <a class="button button-secondary" href="{{ url_for('mail_inbox', folder=folder) }}">← К списку</a>
     {% if folder == 'inbox' %}
       <a class="button" href="{{ url_for('mail_compose', reply_uid=uid, reply_folder=folder) }}">Ответить</a>
     {% endif %}
+    {% if folder != 'sent' %}
+      <form method="post" action="{{ url_for('mail_message_status', uid=uid) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="folder" value="{{ folder }}">
+        <input type="hidden" name="action" value="unread">
+        <button class="button button-secondary" type="submit">Отметить непрочитанным</button>
+      </form>
+    {% endif %}
+    <form method="post" action="{{ url_for('mail_message_delete', uid=uid) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="folder" value="{{ folder }}">
+      <button class="button button-danger" type="submit">
+        {% if folder == 'trash' %}Удалить окончательно{% else %}Удалить{% endif %}
+      </button>
+    </form>
   </div>
 </div>
 

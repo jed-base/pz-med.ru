@@ -82,7 +82,7 @@
       {% if messages %}
         <div class="mail-list">
           {% for item in messages %}
-            <a class="mail-row {% if item.unread and folder == 'inbox' %}mail-row-unread{% endif %}"
+            <a class="mail-row {% if item.unread and folder != 'sent' %}mail-row-unread{% endif %}"
                href="{{ url_for('mail_message', uid=item.uid, folder=folder) }}">
               <span class="mail-unread-dot" aria-hidden="true"></span>
               <div class="mail-row-person">
@@ -97,6 +97,13 @@
               <div class="mail-row-subject">
                 <strong>{{ item.subject }}</strong>
               </div>
+              {% if folder == 'sent' %}
+                <span class="mail-status mail-status-sent">Отправлено</span>
+              {% elif item.unread %}
+                <span class="mail-status mail-status-unread">Новое</span>
+              {% else %}
+                <span class="mail-status mail-status-read">Прочитано</span>
+              {% endif %}
               <time>{{ item.date }}</time>
             </a>
           {% endfor %}
