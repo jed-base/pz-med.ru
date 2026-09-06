@@ -6,9 +6,10 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta name="theme-color" content="#0d5c46">
   <title>{% block title %}Поставки PZ-Med{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='office.css') }}?v=20260824-2">
-  <link rel="stylesheet" href="{{ url_for('static', filename='release.css') }}?v=20260824-2">
-  <script defer src="{{ url_for('static', filename='office.js') }}?v=20260824-2"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='office.css') }}?v=20260906-1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='release.css') }}?v=20260906-1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='mail.css') }}?v=20260906-1">
+  <script defer src="{{ url_for('static', filename='office.js') }}?v=20260906-1"></script>
 </head>
 <body>
   <header class="topbar">
@@ -20,6 +21,7 @@
       {% if session.get('office_authenticated') %}
       <nav class="nav" aria-label="Навигация реестра поставок">
         <a href="{{ url_for('dashboard') }}">Заказчики</a>
+        <a href="{{ url_for('mail_inbox') }}">Почта</a>
         <a href="{{ url_for('export_csv') }}">Экспорт CSV</a>
         <a href="{{ url_for('account') }}">Пароль</a>
         <form method="post" action="{{ url_for('logout') }}">
