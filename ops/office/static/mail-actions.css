@@ -42,12 +42,102 @@
   box-shadow: 0 12px 24px rgba(158, 45, 45, .18);
 }
 
+.mail-customer-tag,
+.mail-customer-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e6f2ed;
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.mail-customer-link:hover { background: #d9ece4; color: var(--green); }
+
+.customer-mail-card { margin-bottom: 20px; overflow: hidden; }
+.customer-mail-head { align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.customer-mail-head p { max-width: 760px; }
+.customer-mail-addresses { padding: 20px 22px; border-bottom: 1px solid var(--line); background: #fbfcfb; }
+.customer-mail-address-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.customer-mail-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 8px 0 11px;
+  border: 1px solid #cfe0d8;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 13px;
+}
+.customer-mail-address small { color: var(--muted); font-size: 11px; }
+.customer-mail-address form { margin: 0; }
+.customer-mail-address button {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: #eef3f1;
+  color: #687771;
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+}
+.customer-mail-address button:hover { background: #fdecec; color: var(--danger); }
+.customer-mail-address-auto { background: #f4f8f6; }
+.customer-mail-add { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(180px, .8fr) auto; gap: 10px; }
+.customer-mail-add input { min-width: 0; }
+
+.customer-mail-history { display: grid; }
+.customer-mail-history-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 70px;
+  padding: 12px 22px;
+  border-bottom: 1px solid #e8efec;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background .14s ease;
+}
+.customer-mail-history-row:last-child { border-bottom: 0; }
+.customer-mail-history-row:hover { background: #f8fbf9; }
+.customer-mail-direction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 820;
+  white-space: nowrap;
+}
+.customer-mail-direction.incoming { background: var(--green-soft); color: var(--green-dark); }
+.customer-mail-direction.outgoing { background: #eef2f0; color: #5f6f69; }
+.customer-mail-history-main { min-width: 0; }
+.customer-mail-history-main strong,
+.customer-mail-history-main small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.customer-mail-history-main strong { font-size: 14px; }
+.customer-mail-history-main small { margin-top: 4px; color: var(--muted); font-size: 12px; }
+.customer-mail-history-row time { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.customer-mail-empty { min-height: 180px; }
+
 @media (max-width: 900px) {
   .mail-row {
     grid-template-columns: 10px minmax(130px, 190px) minmax(180px, 1fr) auto;
   }
   .mail-status { grid-column: 4; }
   .mail-row time { grid-column: 3; }
+  .customer-mail-add { grid-template-columns: 1fr; }
+  .customer-mail-history-row { grid-template-columns: 82px minmax(0, 1fr) auto; }
+  .customer-mail-history-row time { grid-column: 2; font-size: 11px; }
 }
 
 @media (max-width: 650px) {
@@ -62,4 +152,12 @@
   .mail-row-subject { grid-column: 2 / 4; }
   .mail-status { grid-column: 2; justify-self: start; }
   .mail-row time { grid-column: 3; grid-row: 1; }
+  .customer-mail-head { align-items: stretch; }
+  .customer-mail-head .button { width: 100%; }
+  .customer-mail-addresses { padding: 16px; }
+  .customer-mail-history-row { grid-template-columns: 1fr auto; gap: 8px; padding: 12px 16px; }
+  .customer-mail-direction { justify-self: start; }
+  .customer-mail-history-main { grid-column: 1 / -1; grid-row: 2; }
+  .customer-mail-history-row .mail-status { grid-column: 2; grid-row: 1; }
+  .customer-mail-history-row time { grid-column: 1 / -1; grid-row: 3; }
 }
