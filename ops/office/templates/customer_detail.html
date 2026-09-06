@@ -3,6 +3,10 @@
 {% set latest = office_latest_deployment(customer['id']) %}
 {% set job = office_pending_job(customer['id']) %}
 {% set message_release = office_latest_release_message(customer['id']) %}
+{% set linked_emails = office_customer_emails(customer['id']) %}
+{% set all_customer_emails = office_customer_all_emails(customer) %}
+{% set primary_email = office_customer_primary_email(customer) %}
+{% set customer_mail = office_customer_mail_history(customer) if all_customer_emails else [] %}
 <div class="page-head">
   <div>
     <div class="eyebrow">{{ 'Государственная организация' if customer['org_type'] == 'state' else 'Частная организация' }}</div>
@@ -10,6 +14,9 @@
     <p class="muted">{% if customer['inn'] %}ИНН {{ customer['inn'] }}{% endif %}{% if customer['contract_number'] %} · договор № {{ customer['contract_number'] }}{% endif %}{% if customer['contract_date'] %} от {{ fmt_date(customer['contract_date']) }}{% endif %}</p>
   </div>
   <div class="head-actions">
+    {% if primary_email %}
+      <a class="button button-secondary" href="{{ url_for('mail_compose', to=primary_email) }}">Написать письмо</a>
+    {% endif %}
     <a class="button button-secondary" href="{{ url_for('customer_edit', customer_id=customer['id']) }}">Редактировать</a>
     {% if not job or job['status'] not in ['queued', 'building'] %}
       {% if latest %}
@@ -49,12 +56,14 @@
       <div><dt>License ID</dt><dd class="mono">{{ customer['license_id'] or (latest['license_id'] if latest and latest['license_id'] else '—') }}</dd></div>
       <div><dt>Текущая версия</dt><dd class="mono strong">{{ latest['version'] if latest else 'Поставка ещё не сформирована' }}</dd></div>
       <div><dt>Контакт ИТ</dt><dd>{{ customer['it_contact'] or 'Не указан' }}</dd></div>
+      <div><dt>E-mail</dt><dd>{% if all_customer_emails %}{{ all_customer_emails|join(', ') }}{% else %}Не привязан{% endif %}</dd></div>
       <div><dt>Примечание</dt><dd>{{ customer['notes'] or '—' }}</dd></div>
     </dl>
   </section>
   <section class="card info-card">
     <h2>Действия</h2>
     <div class="action-stack">
+      {% if primary_email %}<a class="button button-secondary" href="{{ url_for('mail_compose', to=primary_email) }}">Написать заказчику</a>{% endif %}
       {% if not job or job['status'] not in ['queued', 'building'] %}
         {% if latest %}
           <a class="button" href="{{ url_for('release.request_release', customer_id=customer['id'], kind='update') }}">Сформировать обновление</a>
@@ -74,6 +83,60 @@
     </div>
   </section>
 </div>
+
+<section class="card customer-mail-card">
+  <div class="section-head customer-mail-head">
+    <div>
+      <div class="eyebrow">Связь с заказчиком</div>
+      <h2>Почта и переписка</h2>
+      <p class="muted">Письма связываются с карточкой по e-mail. Адрес из поля «Контакт ИТ» тоже учитывается автоматически.</p>
+    </div>
+    {% if primary_email %}<a class="button" href="{{ url_for('mail_compose', to=primary_email) }}">Написать</a>{% endif %}
+  </div>
+
+  <div class="customer-mail-addresses">
+    <div class="customer-mail-address-list">
+      {% for item in linked_emails %}
+        <span class="customer-mail-address">
+          <span>{{ item.email }}</span>
+          {% if item.label %}<small>{{ item.label }}</small>{% endif %}
+          <form method="post" action="{{ url_for('customer_email_delete', customer_id=customer['id'], email_id=item.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" aria-label="Отвязать {{ item.email }}">×</button>
+          </form>
+        </span>
+      {% endfor %}
+      {% for email in all_customer_emails %}
+        {% if not linked_emails|selectattr('email', 'equalto', email)|list %}
+          <span class="customer-mail-address customer-mail-address-auto"><span>{{ email }}</span><small>из контакта ИТ</small></span>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <form class="customer-mail-add" method="post" action="{{ url_for('customer_email_add', customer_id=customer['id']) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="email" name="email" required placeholder="email@clinic.ru" autocomplete="off">
+      <input name="label" placeholder="Например: ИТ, руководитель" autocomplete="off">
+      <button class="button button-secondary" type="submit">Привязать e-mail</button>
+    </form>
+  </div>
+
+  {% if customer_mail %}
+    <div class="customer-mail-history">
+      {% for item in customer_mail %}
+        <a class="customer-mail-history-row" href="{{ item.url }}">
+          <span class="customer-mail-direction {{ 'incoming' if item.folder == 'inbox' else 'outgoing' }}">{{ item.direction }}</span>
+          <span class="customer-mail-history-main"><strong>{{ item.subject }}</strong><small>{% if item.folder == 'inbox' %}{{ item.from_display }}{% else %}{{ item.to_display }}{% endif %}</small></span>
+          {% if item.unread and item.folder == 'inbox' %}<span class="mail-status mail-status-unread">Новое</span>{% endif %}
+          <time>{{ item.date }}</time>
+        </a>
+      {% endfor %}
+    </div>
+  {% elif all_customer_emails %}
+    <div class="empty customer-mail-empty"><strong>Переписки пока нет.</strong><span>Когда появятся входящие или исходящие письма с привязанным e-mail, они будут показаны здесь.</span></div>
+  {% else %}
+    <div class="empty customer-mail-empty"><strong>Привяжите e-mail заказчика.</strong><span>После этого Office сможет автоматически показывать связанную переписку в карточке.</span></div>
+  {% endif %}
+</section>
 
 <section class="card table-card">
   <div class="section-head"><div><div class="eyebrow">Хронология</div><h2>История поставок и обновлений</h2></div></div>
