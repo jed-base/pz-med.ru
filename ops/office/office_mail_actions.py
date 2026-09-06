@@ -107,4 +107,4 @@ def register_mail_action_features(app, *, login_required) -> None:
                 flash("Письмо перемещено в корзину.", "success")
         except MailError as error:
             flash(str(error), "error")
-        return redirect(url_for("mail_inbox", folder=folder if folder == "trash" else "inbox"))
+        return redirect(url_for("mail_inbox", folder=folder))
