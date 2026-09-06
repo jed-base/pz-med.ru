@@ -21,8 +21,8 @@
       {% if session.get('office_authenticated') %}
       <nav class="nav" aria-label="Навигация реестра поставок">
         <a href="{{ url_for('dashboard') }}">Заказчики</a>
-        <a href="{{ url_for('mail_inbox') }}">Почта</a>
-        <a href="{{ url_for('export_csv') }}">Экспорт CSV</a>
+        <a class="nav-mail" href="{{ url_for('mail_inbox') }}">Почта</a>
+        <a class="nav-export" href="{{ url_for('export_csv') }}">Экспорт CSV</a>
         <a href="{{ url_for('account') }}">Пароль</a>
         <form method="post" action="{{ url_for('logout') }}">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
