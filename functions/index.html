@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Возможности PZ-Med — подробная презентация функций</title>
+  <meta name="description" content="Подробная презентация возможностей PZ-Med: рабочая панель, задачи, отчёты, табель, графики, дежурства, отпуска, алгоритмы, документы, отложенная запись, сообщения и управление структурой медицинской организации.">
+  <meta name="theme-color" content="#0d5c46">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Возможности PZ-Med">
+  <meta property="og:description" content="Как PZ-Med организует ежедневные управленческие процессы медицинской организации.">
+  <meta property="og:url" content="https://pz-med.ru/functions/">
+  <link rel="canonical" href="https://pz-med.ru/functions/">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/site.css?v=20260906-1">
+  <link rel="stylesheet" href="/assets/functions.css?v=20260906-1">
+  <script defer src="/assets/site.js?v=20260906-1"></script>
+</head>
+<body class="functions-page">
+  <header class="site-header" data-header>
+    <div class="shell header-inner">
+      <a class="brand" href="/" aria-label="PZ-Med — на главную">
+        <span class="brand-mark" aria-hidden="true">PZ</span>
+        <span class="brand-name">PZ-Med</span>
+      </a>
+      <nav class="nav" aria-label="Основная навигация">
+        <a href="/">Главная</a>
+        <a href="/functions/" aria-current="page">Возможности</a>
+        <a href="/#local">Размещение</a>
+        <a href="/#implementation">Внедрение</a>
+        <a href="/demo/" target="_blank" rel="noopener" data-demo-link>Демо</a>
+      </nav>
+      <a class="button button-small" href="/#contact">Обсудить внедрение</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="functions-hero">
+      <div class="shell functions-hero__grid">
+        <div class="functions-hero__copy reveal">
+          <div class="eyebrow">Возможности PZ-Med</div>
+          <h1>Одна система для процессов, которые обычно живут <span>в разных местах</span></h1>
+          <p class="functions-hero__lead">PZ-Med объединяет повседневную организационную работу медицинского учреждения: от поручений и отчётов до отпусков, дежурств, документов и очередей на дефицитные услуги.</p>
+          <div class="functions-hero__actions">
+            <a class="button" href="/demo/" target="_blank" rel="noopener">Открыть демо</a>
+            <a class="button button-ghost" href="#catalog">Посмотреть функции</a>
+          </div>
+          <p class="functions-hero__note"><span class="dot"></span>PZ-Med дополняет МИС и закрывает управленческие процессы вокруг неё.</p>
+        </div>
+
+        <div class="functions-overview reveal" aria-label="Карта возможностей PZ-Med">
+          <div class="functions-overview__core">
+            <span>PZ</span>
+            <strong>PZ-Med</strong>
+            <small>единое рабочее пространство</small>
+          </div>
+          <div class="functions-overview__orbit functions-overview__orbit--1">Задачи</div>
+          <div class="functions-overview__orbit functions-overview__orbit--2">Отчёты</div>
+          <div class="functions-overview__orbit functions-overview__orbit--3">Графики</div>
+          <div class="functions-overview__orbit functions-overview__orbit--4">Документы</div>
+          <div class="functions-overview__orbit functions-overview__orbit--5">Отпуска</div>
+          <div class="functions-overview__orbit functions-overview__orbit--6">Алгоритмы</div>
+          <div class="functions-overview__orbit functions-overview__orbit--7">Сообщения</div>
+          <div class="functions-overview__orbit functions-overview__orbit--8">Очереди</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="functions-summary" id="catalog">
+      <div class="shell">
+        <div class="functions-summary__header reveal">
+          <div>
+            <div class="eyebrow">Навигация</div>
+            <h2>Что умеет система</h2>
+          </div>
+          <p>Выберите процесс или прокрутите страницу: каждый блок показывает задачу, механизм работы и пользу для сотрудников и руководителей.</p>
+        </div>
+        <nav class="functions-chip-nav" aria-label="Содержание страницы">
+          <a href="#dashboard">Рабочая панель</a>
+          <a href="#tasks">Задачи</a>
+          <a href="#reports">Отчёты</a>
+          <a href="#timesheet">Табель и графики</a>
+          <a href="#duties">Дежурства</a>
+          <a href="#vacations">Отпуска</a>
+          <a href="#algorithms">Алгоритмы</a>
+          <a href="#documents">Документы</a>
+          <a href="#deferred">Отложенная запись</a>
+          <a href="#messages">Сообщения</a>
+          <a href="#announcements">Объявления</a>
+          <a href="#structure">Структура</a>
+          <a href="#access">Права доступа</a>
+          <a href="#vacancies">Вакантные ставки</a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="function-section function-section--soft" id="dashboard">
+      <div class="shell function-layout">
+        <div class="function-copy reveal">
+          <span class="function-number">01</span>
+          <div class="eyebrow">Рабочая панель</div>
+          <h2>Сотрудник сразу видит то, что требует внимания</h2>
+          <p class="function-lead">Главная страница собирает актуальную информацию из разных модулей и показывает её в одном месте.</p>
+          <ul class="function-list">
+            <li>задачи и отчёты, требующие действия;</li>
+            <li>ближайшие дни рождения сотрудников;</li>
+            <li>отсутствующие сегодня;</li>
+            <li>состав своего отделения или подразделения;</li>
+            <li>объявления, относящиеся к пользователю.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> меньше ручных проверок разных разделов и меньше риска пропустить срок.</p>
+        </div>
+        <div class="function-visual dashboard-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Рабочая панель</strong><span>сегодня</span></div>
+          <div class="ui-stats"><div><small>Задачи</small><b>6</b></div><div><small>Отчёты</small><b>3</b></div><div><small>Отсутствуют</small><b>2</b></div></div>
+          <div class="ui-grid"><div class="ui-card ui-card--wide"><b>Требуют действия</b><span>Отчёт за август</span><span>Задача до 16:00</span><span>Согласование отпуска</span></div><div class="ui-card"><b>Дни рождения</b><span>Иванова · 12 сен</span><span>Петров · 18 сен</span></div><div class="ui-card"><b>Сегодня</b><span>2 отсутствия</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section" id="tasks">
+      <div class="shell function-layout function-layout--reverse">
+        <div class="function-copy reveal">
+          <span class="function-number">02</span>
+          <div class="eyebrow">Задачи</div>
+          <h2>Поручения не теряются в переписке</h2>
+          <p class="function-lead">Руководитель ставит задачу конкретному сотруднику или нескольким исполнителям, а система сохраняет срок, статус и историю работы.</p>
+          <ul class="function-list">
+            <li>личные и управленческие задачи;</li>
+            <li>сроки, приоритеты и статусы;</li>
+            <li>комментарии и возврат на доработку;</li>
+            <li>отдельные копии задания для нескольких исполнителей;</li>
+            <li>поиск и архив выполненных задач.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> у исполнителя понятный список работы, у руководителя — контролируемый процесс вместо сообщений в чате.</p>
+        </div>
+        <div class="function-visual task-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Задачи</strong><span>6 открытых</span></div>
+          <div class="task-row task-row--urgent"><i></i><div><b>Подготовить данные по отделению</b><small>Сегодня · высокий приоритет</small></div><em>В работе</em></div>
+          <div class="task-row"><i></i><div><b>Проверить график на сентябрь</b><small>до 10 сентября</small></div><em>Новая</em></div>
+          <div class="task-row"><i></i><div><b>Обновить локальный алгоритм</b><small>до 15 сентября</small></div><em>На доработке</em></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section function-section--soft" id="reports">
+      <div class="shell function-layout">
+        <div class="function-copy reveal">
+          <span class="function-number">03</span>
+          <div class="eyebrow">Табличные отчёты</div>
+          <h2>Сбор данных без десятков Excel-файлов</h2>
+          <p class="function-lead">Руководитель создаёт форму один раз, открывает период и назначает исполнителей. Данные собираются в общей структуре и доступны для проверки.</p>
+          <ul class="function-list">
+            <li>конструктор собственных табличных форм;</li>
+            <li>периоды сбора и назначение исполнителей;</li>
+            <li>заполнение непосредственно в браузере;</li>
+            <li>копирование предыдущих значений для повторяющихся отчётов;</li>
+            <li>проверка, возврат и сравнение данных в рамках формы;</li>
+            <li>локальные формы, которые не поднимаются выше без необходимости.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> одна актуальная форма вместо рассылки файлов и ручной склейки ответов.</p>
+        </div>
+        <div class="function-visual report-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Отчёт «Показатели отделения»</strong><span>Август</span></div>
+          <div class="report-table"><div class="report-table__head"><b>Показатель</b><b>План</b><b>Факт</b><b>Статус</b></div><div><span>Посещения</span><span>1 240</span><strong>1 286</strong><em>Заполнено</em></div><div><span>Диспансеризация</span><span>420</span><strong>407</strong><em>Заполнено</em></div><div><span>Вакцинация</span><span>180</span><strong>—</strong><em class="pending">Ожидается</em></div></div>
+          <div class="report-actions"><span>Копировать предыдущие значения</span><b>Сохранить</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section" id="timesheet">
+      <div class="shell function-layout function-layout--reverse">
+        <div class="function-copy reveal">
+          <span class="function-number">04</span>
+          <div class="eyebrow">Графики работы и табель</div>
+          <h2>Планирование и фактический учёт в связанной системе</h2>
+          <p class="function-lead">Графики и табель опираются на структуру сотрудников и учитывают зарегистрированные отсутствия.</p>
+          <ul class="function-list">
+            <li>рабочие графики сотрудников;</li>
+            <li>учёт рабочих и нерабочих дней;</li>
+            <li>отсутствия с типами, которые можно учитывать в табеле;</li>
+            <li>черновик, утверждение и архив табеля;</li>
+            <li>доступ руководителя в пределах своей зоны ответственности.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> меньше повторного ввода и расхождений между графиком, отсутствиями и табелем.</p>
+        </div>
+        <div class="function-visual schedule-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Сентябрь 2026</strong><span>Терапевтическое отделение</span></div>
+          <div class="calendar-head"><b>Сотрудник</b><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b></div>
+          <div class="calendar-row"><span>Иванов И.И.</span><i>8</i><i>8</i><i>8</i><i>8</i><i>8</i><i class="off">—</i></div>
+          <div class="calendar-row"><span>Петрова А.А.</span><i>8</i><i>8</i><i class="leave">О</i><i class="leave">О</i><i class="leave">О</i><i class="off">—</i></div>
+          <div class="calendar-row"><span>Сидоров Н.Н.</span><i>8</i><i>8</i><i>8</i><i>8</i><i>8</i><i class="off">—</i></div>
+          <div class="schedule-legend"><span><i></i>рабочий день</span><span><i class="leave"></i>отпуск</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section function-section--dark" id="duties">
+      <div class="shell function-layout">
+        <div class="function-copy reveal">
+          <span class="function-number">05</span>
+          <div class="eyebrow light">Дежурства</div>
+          <h2>Графики дежурств, которые видны всем нужным участникам</h2>
+          <p class="function-lead">Дежурства можно вести на уровне учреждения, подразделения или отделения — с участниками, ответственными и печатным представлением.</p>
+          <ul class="function-list">
+            <li>разные типы и уровни графиков;</li>
+            <li>назначение сотрудников и самозапись, если она разрешена;</li>
+            <li>поиск и просмотр последних графиков;</li>
+            <li>печатная версия для размещения или подписи;</li>
+            <li>автозаполнение дат по заданным правилам.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> единый актуальный график вместо нескольких копий и бумажных списков.</p>
+        </div>
+        <div class="function-visual duty-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Дежурства выходного дня</strong><span>сентябрь</span></div>
+          <div class="duty-date"><b>05</b><span>суббота</span><strong>Петрова А.А.</strong><em>09:00–15:00</em></div>
+          <div class="duty-date"><b>12</b><span>суббота</span><strong>Сидоров Н.Н.</strong><em>09:00–15:00</em></div>
+          <div class="duty-date"><b>19</b><span>суббота</span><strong>Кузнецова М.С.</strong><em>09:00–15:00</em></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section" id="vacations">
+      <div class="shell function-layout function-layout--reverse">
+        <div class="function-copy reveal">
+          <span class="function-number">06</span>
+          <div class="eyebrow">Отпуска и отсутствия</div>
+          <h2>От пожелания сотрудника до согласованного плана</h2>
+          <p class="function-lead">Сотрудник вносит пожелания по отпуску, а согласование идёт по структуре учреждения и полномочиям руководителей.</p>
+          <ul class="function-list">
+            <li>пожелания сотрудников на следующий год;</li>
+            <li>согласованные периоды и точные даты;</li>
+            <li>маршрутизация к ответственному руководителю;</li>
+            <li>отдельный учёт больничных, командировок и других отсутствий;</li>
+            <li>связь отсутствий с рабочей панелью и табелем.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> руководитель видит общую картину, а сотрудник понимает статус своего отпуска.</p>
+        </div>
+        <div class="function-visual vacation-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>График отпусков</strong><span>2027</span></div>
+          <div class="vacation-person"><b>Петрова А.А.</b><div><i style="--start:8%;--width:25%"></i><i style="--start:58%;--width:20%"></i></div></div>
+          <div class="vacation-person"><b>Сидоров Н.Н.</b><div><i style="--start:24%;--width:23%"></i><i style="--start:76%;--width:18%"></i></div></div>
+          <div class="vacation-person"><b>Кузнецова М.С.</b><div><i style="--start:42%;--width:20%"></i></div></div>
+          <div class="vacation-status"><span>Пожелания собраны</span><b>На согласовании</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section function-section--soft" id="algorithms">
+      <div class="shell function-layout">
+        <div class="function-copy reveal">
+          <span class="function-number">07</span>
+          <div class="eyebrow">Алгоритмы и инструкции</div>
+          <h2>Нужная инструкция попадает именно к тем, кому она предназначена</h2>
+          <p class="function-lead">Локальные алгоритмы можно адресовать подразделениям, отделениям и должностям, не перегружая информацией остальных сотрудников.</p>
+          <ul class="function-list">
+            <li>структурированные рабочие инструкции;</li>
+            <li>адресация по должности и организационной структуре;</li>
+            <li>вложения к алгоритму;</li>
+            <li>поиск и единая актуальная версия;</li>
+            <li>публикация руководителями в пределах полномочий.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> меньше устаревших файлов и вопросов «где лежит актуальная инструкция?».</p>
+        </div>
+        <div class="function-visual algorithm-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Алгоритм</strong><span>актуальная версия</span></div>
+          <h3>Действия при выявлении пациента с высокой температурой</h3>
+          <div class="algorithm-step"><b>1</b><span>Оценить состояние пациента</span></div>
+          <div class="algorithm-step"><b>2</b><span>Изолировать поток и уведомить ответственного</span></div>
+          <div class="algorithm-step"><b>3</b><span>Действовать по локальному маршруту</span></div>
+          <div class="algorithm-audience"><span>Терапевты</span><span>Медсёстры</span><span>ТО №1</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section" id="documents">
+      <div class="shell function-layout function-layout--reverse">
+        <div class="function-copy reveal">
+          <span class="function-number">08</span>
+          <div class="eyebrow">Документы</div>
+          <h2>Документ формируется из шаблона, а не набирается заново</h2>
+          <p class="function-lead">Организация загружает собственный DOCX-шаблон и определяет поля. PZ-Med подставляет данные сотрудника и введённые значения в готовый документ.</p>
+          <ul class="function-list">
+            <li>собственные шаблоны документов;</li>
+            <li>автоматическая подстановка ФИО, должности и других данных;</li>
+            <li>настраиваемые поля формы;</li>
+            <li>формирование готового DOCX;</li>
+            <li>мягкая проверка используемых плейсхолдеров.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> типовые служебные документы создаются быстрее и выглядят единообразно.</p>
+        </div>
+        <div class="function-visual document-visual reveal" aria-hidden="true">
+          <div class="document-sheet"><small>Главному врачу</small><h3>СЛУЖЕБНАЯ ЗАПИСКА</h3><p>Прошу учесть информацию о работе сотрудника в указанный период.</p><div class="document-field"><span>Сотрудник</span><b>Петрова Анна Алексеевна</b></div><div class="document-field"><span>Должность</span><b>врач-терапевт участковый</b></div><div class="document-sign"><span>06.09.2026</span><b>____________</b></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section function-section--dark" id="deferred">
+      <div class="shell function-layout">
+        <div class="function-copy reveal">
+          <span class="function-number">09</span>
+          <div class="eyebrow light">Отложенная запись</div>
+          <h2>Управляемая очередь на дефицитные консультации и исследования</h2>
+          <p class="function-lead">Если свободного слота сейчас нет, пациента можно внести в структурированный журнал ожидания, не теряя заявку в бумажной тетради.</p>
+          <ul class="function-list">
+            <li>очереди на уровне сотрудника, отделения, подразделения или учреждения;</li>
+            <li>делегирование работы с очередью другому сотруднику;</li>
+            <li>приоритет, желаемый срок и дата создания;</li>
+            <li>контактные данные и показания при необходимости;</li>
+            <li>поиск и единый список ожидающих.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> очередь становится прозрачной и доступной тем сотрудникам, которые реально ею занимаются.</p>
+        </div>
+        <div class="function-visual deferred-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Отложенная запись</strong><span>12 ожидают</span></div>
+          <div class="queue-row"><strong>Высокий</strong><div><b>УЗИ сосудов</b><small>желательно до 12.09</small></div><em>Иванов И.И.</em></div>
+          <div class="queue-row"><strong>Обычный</strong><div><b>Кардиолог</b><small>желательно до 20.09</small></div><em>Петрова А.А.</em></div>
+          <div class="queue-row"><strong>Обычный</strong><div><b>Дневной стационар</b><small>срок не указан</small></div><em>Сидоров Н.Н.</em></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section" id="messages">
+      <div class="shell function-layout function-layout--reverse">
+        <div class="function-copy reveal">
+          <span class="function-number">10</span>
+          <div class="eyebrow">Внутренние сообщения</div>
+          <h2>Рабочая переписка внутри собственного информационного пространства</h2>
+          <p class="function-lead">Личные и групповые чаты позволяют обсуждать рабочие вопросы рядом с другими процессами PZ-Med.</p>
+          <ul class="function-list">
+            <li>личные и групповые диалоги;</li>
+            <li>поиск чатов;</li>
+            <li>приглашение участников в группу;</li>
+            <li>вложения, если они разрешены настройками учреждения;</li>
+            <li>единая авторизация с остальными модулями.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> часть внутренней рабочей коммуникации можно оставить внутри локального контура организации.</p>
+        </div>
+        <div class="function-visual messages-visual reveal" aria-hidden="true">
+          <div class="chat-list"><b>Чаты</b><span class="active">Терапевтическое отделение <i>3</i></span><span>Старшая медсестра</span><span>Группа отчётов</span></div>
+          <div class="chat-body"><div class="chat-head"><b>Терапевтическое отделение</b><small>8 участников</small></div><p class="bubble bubble--other">Коллеги, график на следующую неделю опубликован.</p><p class="bubble bubble--own">Спасибо, посмотрел.</p><div class="chat-input">Сообщение… <b>→</b></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section function-section--soft" id="announcements">
+      <div class="shell function-layout">
+        <div class="function-copy reveal">
+          <span class="function-number">11</span>
+          <div class="eyebrow">Объявления</div>
+          <h2>Важная информация появляется на рабочей панели</h2>
+          <p class="function-lead">Руководитель может разместить объявление на нужном уровне структуры, чтобы сотрудники увидели его при обычной работе в системе.</p>
+          <ul class="function-list">
+            <li>заголовок и текст объявления;</li>
+            <li>период отображения;</li>
+            <li>уровень учреждения, подразделения или отделения;</li>
+            <li>автор и дата публикации;</li>
+            <li>отображение на главной странице пользователей.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> оперативная информация не зависит только от рассылок и мессенджеров.</p>
+        </div>
+        <div class="function-visual announcement-visual reveal" aria-hidden="true">
+          <div class="announcement-icon">!</div><div><small>Объявление отделения</small><h3>Изменение порядка передачи отчётов</h3><p>С 10 сентября отчёт за неделю заполняется непосредственно в PZ-Med. Отправлять файл по электронной почте не требуется.</p><span>Опубликовано сегодня · заведующий отделением</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section" id="structure">
+      <div class="shell function-layout function-layout--reverse">
+        <div class="function-copy reveal">
+          <span class="function-number">12</span>
+          <div class="eyebrow">Сотрудники и структура</div>
+          <h2>Все модули понимают, где работает сотрудник и кто им руководит</h2>
+          <p class="function-lead">Организационная структура не дублируется в каждом разделе: она является общей основой приложения.</p>
+          <ul class="function-list">
+            <li>учреждение → подразделение → отделение;</li>
+            <li>должности и штатные назначения;</li>
+            <li>основное место работы и дополнительные назначения;</li>
+            <li>руководители отделений и подразделений;</li>
+            <li>исполняющие обязанности и дополнительные полномочия.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> задачи, отчёты, отпуска и другие процессы используют одну и ту же актуальную структуру.</p>
+        </div>
+        <div class="function-visual structure-visual reveal" aria-hidden="true">
+          <div class="org-node org-node--root"><b>Медицинская организация</b></div><div class="org-line"></div><div class="org-level"><div class="org-node"><b>Подразделение №1</b><span>3 отделения</span></div><div class="org-node"><b>Диагностическое</b><span>2 отделения</span></div></div><div class="org-line org-line--short"></div><div class="org-level"><div class="org-node org-node--small"><b>ТО №1</b><span>18 сотрудников</span></div><div class="org-node org-node--small"><b>ТО №2</b><span>16 сотрудников</span></div><div class="org-node org-node--small"><b>Хирургия</b><span>12 сотрудников</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section function-section--dark" id="access">
+      <div class="shell function-layout">
+        <div class="function-copy reveal">
+          <span class="function-number">13</span>
+          <div class="eyebrow light">Права доступа</div>
+          <h2>Пользователь видит не всё учреждение, а свою рабочую область</h2>
+          <p class="function-lead">Доступ строится на роли, должности, организационной структуре и явно выданных полномочиях.</p>
+          <ul class="function-list">
+            <li>сотрудник работает со своими задачами и доступными ему процессами;</li>
+            <li>руководитель отделения управляет своим отделением;</li>
+            <li>руководитель подразделения видит подчинённые отделения;</li>
+            <li>отдельные права можно выдавать конкретным сотрудникам;</li>
+            <li>системное администрирование отделено от обычной работы.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> одна система подходит разным уровням управления без необходимости создавать отдельные копии данных.</p>
+        </div>
+        <div class="function-visual access-visual reveal" aria-hidden="true">
+          <div class="access-user"><span>ЗО</span><div><b>Заведующий отделением</b><small>Терапевтическое отделение №1</small></div></div><div class="access-rule"><i>✓</i><span>Сотрудники своего отделения</span></div><div class="access-rule"><i>✓</i><span>Отпуска и графики отделения</span></div><div class="access-rule"><i>✓</i><span>Отчёты в пределах полномочий</span></div><div class="access-rule access-rule--off"><i>×</i><span>Данные других подразделений</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="function-section" id="vacancies">
+      <div class="shell function-layout function-layout--reverse">
+        <div class="function-copy reveal">
+          <span class="function-number">14</span>
+          <div class="eyebrow">Вакантные ставки и расчёты</div>
+          <h2>От штатной потребности до распределения работы</h2>
+          <p class="function-lead">Для руководителей доступны инструменты, которые помогают видеть штатные ставки, занятость и работу сотрудников на вакантных должностях.</p>
+          <ul class="function-list">
+            <li>штатные ставки по должностям;</li>
+            <li>занятые ставки без учёта работы на вакансии;</li>
+            <li>остаток для вакантного распределения;</li>
+            <li>распределение работы между сотрудниками;</li>
+            <li>формирование отчётных документов по шаблону.</li>
+          </ul>
+          <p class="function-result"><strong>Результат:</strong> руководителю проще контролировать доступный объём ставок и подготовку связанных отчётов.</p>
+        </div>
+        <div class="function-visual vacancy-visual reveal" aria-hidden="true">
+          <div class="ui-topline"><strong>Врач-терапевт участковый</strong><span>штат</span></div><div class="vacancy-stats"><div><small>Всего ставок</small><b>18,0</b></div><div><small>Занято</small><b>15,5</b></div><div><small>Доступно</small><b>2,5</b></div></div><div class="vacancy-row"><span>Петрова А.А.</span><b>+0,25</b><em>вакантная ставка</em></div><div class="vacancy-row"><span>Сидоров Н.Н.</span><b>+0,50</b><em>вакантная ставка</em></div><div class="vacancy-row"><span>Кузнецова М.С.</span><b>+0,25</b><em>вакантная ставка</em></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="functions-system-section">
+      <div class="shell">
+        <div class="functions-system-heading reveal">
+          <div class="eyebrow">Не набор разрозненных модулей</div>
+          <h2>Главное преимущество появляется, когда функции работают вместе</h2>
+          <p>Структура учреждения, сотрудники и права доступа являются общей основой. Поэтому изменение в одном процессе может быть сразу учтено в другом.</p>
+        </div>
+        <div class="functions-flow reveal">
+          <div><span>1</span><b>Сотрудник</b><small>одно рабочее назначение</small></div><i>→</i><div><span>2</span><b>Отсутствие</b><small>зарегистрировано один раз</small></div><i>→</i><div><span>3</span><b>Рабочая панель</b><small>видит отсутствие сегодня</small></div><i>→</i><div><span>4</span><b>Табель</b><small>использует тот же факт</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="functions-cta">
+      <div class="shell functions-cta__inner reveal">
+        <div>
+          <div class="eyebrow light">Посмотреть в работе</div>
+          <h2>Лучший способ понять PZ-Med — открыть демо</h2>
+          <p>Демонстрационная база содержит вымышленных сотрудников и данные. Можно свободно посмотреть интерфейс и основные рабочие сценарии.</p>
+        </div>
+        <div class="functions-cta__actions">
+          <a class="button button-light" href="/demo/" target="_blank" rel="noopener">Попробовать демо</a>
+          <a class="functions-cta__link" href="/#contact">Обсудить внедрение →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <a class="brand" href="/" aria-label="PZ-Med — на главную"><span class="brand-mark" aria-hidden="true">PZ</span><span class="brand-name">PZ-Med</span></a>
+      <p>Система управления рабочими процессами медицинской организации.</p>
+      <span>© <span data-year></span> PZ-Med</span>
+    </div>
+  </footer>
+</body>
+</html>
