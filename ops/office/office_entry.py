@@ -5,6 +5,7 @@ from pathlib import Path
 
 import office_app
 from office_mail import register_mail_features
+from office_mail_actions import register_mail_action_features
 from office_release import register_release_features
 
 
@@ -28,6 +29,10 @@ register_release_features(
     now_iso=office_app._now_iso,
 )
 register_mail_features(
+    app,
+    login_required=office_app.login_required,
+)
+register_mail_action_features(
     app,
     login_required=office_app.login_required,
 )
