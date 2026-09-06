@@ -7,6 +7,12 @@
   syncHeader();
   window.addEventListener('scroll', syncHeader, { passive: true });
 
+  // На главной странице короткий блок возможностей остаётся обзором,
+  // а ссылки ведут на отдельную подробную презентацию всех функций.
+  document.querySelectorAll('a[href="#capabilities"]').forEach((link) => {
+    link.href = '/functions/';
+  });
+
   // Публичная песочница живёт в этом же проекте на /demo/.
   // Добавляем ссылки через JS, чтобы не дублировать разметку первого экрана.
   const heroActions = document.querySelector('.hero-actions');
