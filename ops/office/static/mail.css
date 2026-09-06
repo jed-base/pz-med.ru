@@ -67,6 +67,11 @@
 .mail-compose-body { min-height: 360px; font-family: inherit; line-height: 1.6; }
 .mail-compose-actions { margin-top: 20px; }
 
+@media (max-width: 1000px) {
+  .nav a:nth-child(2) { display: inline; }
+  .nav .nav-export { display: none; }
+}
+
 @media (max-width: 900px) {
   .mail-shell { grid-template-columns: 1fr; }
   .mail-sidebar { position: static; }
