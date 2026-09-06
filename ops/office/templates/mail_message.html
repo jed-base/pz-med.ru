@@ -20,8 +20,7 @@
         <button class="button button-secondary" type="submit">Отметить непрочитанным</button>
       </form>
     {% endif %}
-    <form method="post" action="{{ url_for('mail_message_delete', uid=uid) }}"
-          onsubmit="return confirm('{% if folder == 'trash' %}Удалить письмо окончательно?{% else %}Переместить письмо в корзину?{% endif %}')">
+    <form method="post" action="{{ url_for('mail_message_delete', uid=uid) }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="folder" value="{{ folder }}">
       <button class="button button-danger" type="submit">
