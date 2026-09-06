@@ -39,5 +39,7 @@ register_mail_action_features(
 )
 register_customer_mail_features(
     app,
+    db_path=office_app.DB_PATH,
     get_db=office_app.get_db,
+    login_required=office_app.login_required,
 )
