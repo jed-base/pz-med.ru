@@ -37,6 +37,7 @@ done
 SOURCE="$SITE_ROOT/ops/office"
 [[ -f "$SOURCE/office_app.py" ]] || { echo "Run pz-site-update first: office files are missing" >&2; exit 1; }
 [[ -f "$SOURCE/office_entry.py" ]] || { echo "Office release entrypoint is missing; run pz-site-update" >&2; exit 1; }
+[[ -f "$SOURCE/office_mail.py" ]] || { echo "Office mail module is missing; run pz-site-update" >&2; exit 1; }
 [[ -f "$SOURCE/release_worker.py" ]] || { echo "Office release worker is missing; run pz-site-update" >&2; exit 1; }
 [[ -f "$SOURCE/requirements.txt" ]] || { echo "Office requirements are missing" >&2; exit 1; }
 [[ -f "$MAIN_NGINX_SITE" ]] || { echo "Nginx site config not found: $MAIN_NGINX_SITE" >&2; exit 1; }
@@ -221,7 +222,7 @@ location ^~ /office/ {
     proxy_set_header Forwarded "";
     proxy_read_timeout 60s;
     proxy_send_timeout 60s;
-    client_max_body_size 128k;
+    client_max_body_size 12m;
 }
 EOF
 
@@ -261,9 +262,11 @@ echo "=== LOCAL CHECK ==="
 curl -sS -o /dev/null -w 'Office:      HTTP %{http_code}\n' -H 'Host: pz-med.ru' http://127.0.0.1/office/
 CSS_STATUS=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Host: pz-med.ru' http://127.0.0.1/office/static/office.css)
 RELEASE_CSS_STATUS=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Host: pz-med.ru' http://127.0.0.1/office/static/release.css)
+MAIL_CSS_STATUS=$(curl -sS -o /dev/null -w '%{http_code}' -H 'Host: pz-med.ru' http://127.0.0.1/office/static/mail.css)
 echo "Office CSS:  HTTP $CSS_STATUS"
 echo "Release CSS: HTTP $RELEASE_CSS_STATUS"
-if [[ "$CSS_STATUS" != "200" || "$RELEASE_CSS_STATUS" != "200" ]]; then
+echo "Mail CSS:    HTTP $MAIL_CSS_STATUS"
+if [[ "$CSS_STATUS" != "200" || "$RELEASE_CSS_STATUS" != "200" || "$MAIL_CSS_STATUS" != "200" ]]; then
   echo "Office CSS is not being served correctly" >&2
   exit 1
 fi

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Новое письмо · PZ-Med Office{% endblock %}
+
+{% block content %}
+<div class="page-head compact">
+  <div>
+    <div class="eyebrow">Почта</div>
+    <h1>Новое письмо</h1>
+    <p class="muted">Отправитель: {{ mail_address }}</p>
+  </div>
+  <a class="button button-secondary" href="{{ url_for('mail_inbox') }}">← К почте</a>
+</div>
+
+<form class="card mail-compose-card" method="post" enctype="multipart/form-data" action="{{ url_for('mail_compose') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="in_reply_to" value="{{ form_data.in_reply_to }}">
+  <input type="hidden" name="references" value="{{ form_data.references }}">
+
+  <div class="mail-compose-fields">
+    <label>
+      <span>Кому</span>
+      <input type="text" name="to" value="{{ form_data.to }}" placeholder="name@example.ru" required autocomplete="off">
+      <small class="hint">Несколько адресов можно разделить запятой или точкой с запятой.</small>
+    </label>
+
+    <label>
+      <span>Копия</span>
+      <input type="text" name="cc" value="{{ form_data.cc }}" placeholder="Необязательно" autocomplete="off">
+    </label>
+
+    <label>
+      <span>Тема</span>
+      <input type="text" name="subject" value="{{ form_data.subject }}" maxlength="300" required>
+    </label>
+
+    <label>
+      <span>Текст письма</span>
+      <textarea class="mail-compose-body" name="body" rows="18" maxlength="300000">{{ form_data.body }}</textarea>
+    </label>
+
+    <label>
+      <span>Вложения</span>
+      <input type="file" name="attachments" multiple>
+      <small class="hint">До 5 файлов, суммарно не более {{ max_attachment_mb }} МБ.</small>
+    </label>
+  </div>
+
+  <div class="form-actions mail-compose-actions">
+    <a class="button button-secondary" href="{{ url_for('mail_inbox') }}">Отмена</a>
+    <button class="button" type="submit">Отправить письмо</button>
+  </div>
+</form>
+{% endblock %}

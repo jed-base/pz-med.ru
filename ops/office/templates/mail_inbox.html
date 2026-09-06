@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Почта · PZ-Med Office{% endblock %}
+
+{% block content %}
+<div class="page-head mail-page-head">
+  <div>
+    <div class="eyebrow">PZ-Med Office</div>
+    <h1>Почта</h1>
+    <p class="muted">
+      {% if mail_configured %}
+        {{ mail_address }} · письма читаются напрямую с почтового сервера
+      {% else %}
+        Подключение рабочего ящика к Office
+      {% endif %}
+    </p>
+  </div>
+  {% if mail_configured %}
+    <a class="button" href="{{ url_for('mail_compose') }}">Написать письмо</a>
+  {% endif %}
+</div>
+
+{% if not mail_configured %}
+  <section class="card mail-setup-card">
+    <div class="mail-setup-icon" aria-hidden="true">@</div>
+    <div>
+      <h2>Почтовый ящик ещё не подключён</h2>
+      <p>
+        Office уже готов работать через защищённые IMAP/SMTP-подключения.
+        Пароль хранится только в системном файле <span class="mono">/etc/pz-med-office.env</span>
+        и не передаётся браузеру.
+      </p>
+      <div class="mail-setup-grid">
+        <div><small>IMAP</small><strong>mail.jino.ru:993</strong><span>SSL/TLS</span></div>
+        <div><small>SMTP</small><strong>smtp.jino.ru:465</strong><span>SSL/TLS</span></div>
+      </div>
+      <p class="muted mail-setup-note">
+        После добавления OFFICE_MAIL_ADDRESS и OFFICE_MAIL_PASSWORD перезапустите
+        <span class="mono">pz-med-office</span>.
+      </p>
+    </div>
+  </section>
+{% else %}
+  <div class="mail-shell">
+    <aside class="mail-sidebar card">
+      <a class="mail-compose-mobile button" href="{{ url_for('mail_compose') }}">Написать</a>
+      <nav class="mail-folders" aria-label="Папки почты">
+        <a class="{% if folder == 'inbox' %}active{% endif %}" href="{{ url_for('mail_inbox', folder='inbox') }}">
+          <span>Входящие</span>
+          {% if unread_count %}<b>{{ unread_count }}</b>{% endif %}
+        </a>
+        {% if 'sent' in mailboxes %}
+          <a class="{% if folder == 'sent' %}active{% endif %}" href="{{ url_for('mail_inbox', folder='sent') }}">Отправленные</a>
+        {% endif %}
+        {% if 'drafts' in mailboxes %}
+          <a class="{% if folder == 'drafts' %}active{% endif %}" href="{{ url_for('mail_inbox', folder='drafts') }}">Черновики</a>
+        {% endif %}
+        {% if 'trash' in mailboxes %}
+          <a class="{% if folder == 'trash' %}active{% endif %}" href="{{ url_for('mail_inbox', folder='trash') }}">Корзина</a>
+        {% endif %}
+        {% if 'junk' in mailboxes %}
+          <a class="{% if folder == 'junk' %}active{% endif %}" href="{{ url_for('mail_inbox', folder='junk') }}">Спам</a>
+        {% endif %}
+      </nav>
+    </aside>
+
+    <section class="card mail-list-card">
+      <div class="mail-list-toolbar">
+        <div>
+          <h2>{{ folder_label }}</h2>
+          <p class="muted">Показаны последние письма</p>
+        </div>
+        <form method="get" action="{{ url_for('mail_inbox') }}" class="mail-search">
+          <input type="hidden" name="folder" value="{{ folder }}">
+          <input type="search" name="q" value="{{ search }}" placeholder="Поиск по отправителю или теме" autocomplete="off">
+          <button class="button button-secondary" type="submit">Найти</button>
+          {% if search %}
+            <a class="text-link" href="{{ url_for('mail_inbox', folder=folder) }}">Сбросить</a>
+          {% endif %}
+        </form>
+      </div>
+
+      {% if messages %}
+        <div class="mail-list">
+          {% for item in messages %}
+            <a class="mail-row {% if item.unread and folder == 'inbox' %}mail-row-unread{% endif %}"
+               href="{{ url_for('mail_message', uid=item.uid, folder=folder) }}">
+              <span class="mail-unread-dot" aria-hidden="true"></span>
+              <div class="mail-row-person">
+                {% if folder == 'sent' %}
+                  <strong>{{ item.to_display or 'Получатель не указан' }}</strong>
+                  <small>Кому</small>
+                {% else %}
+                  <strong>{{ item.from_display }}</strong>
+                  {% if item.from_address and item.from_name %}<small>{{ item.from_address }}</small>{% endif %}
+                {% endif %}
+              </div>
+              <div class="mail-row-subject">
+                <strong>{{ item.subject }}</strong>
+              </div>
+              <time>{{ item.date }}</time>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty mail-empty">
+          <strong>{% if search %}Писем по запросу не найдено{% else %}Здесь пока нет писем{% endif %}</strong>
+          <span>{% if search %}Попробуйте изменить запрос.{% else %}Новые письма появятся здесь автоматически.{% endif %}</span>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+{% endif %}
+{% endblock %}

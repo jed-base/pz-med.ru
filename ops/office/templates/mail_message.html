@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ subject }} · Почта PZ-Med{% endblock %}
+
+{% block content %}
+<div class="page-head compact mail-message-head">
+  <div>
+    <div class="eyebrow">{{ folder_label }}</div>
+    <h1>{{ subject }}</h1>
+  </div>
+  <div class="head-actions">
+    <a class="button button-secondary" href="{{ url_for('mail_inbox', folder=folder) }}">← К списку</a>
+    {% if folder == 'inbox' %}
+      <a class="button" href="{{ url_for('mail_compose', reply_uid=uid, reply_folder=folder) }}">Ответить</a>
+    {% endif %}
+  </div>
+</div>
+
+<article class="card mail-message-card">
+  <header class="mail-message-meta">
+    <div class="mail-avatar" aria-hidden="true">{{ (from_name or from_address or '?')[:1]|upper }}</div>
+    <div class="mail-message-from">
+      <strong>{{ from_name or from_address or 'Неизвестный отправитель' }}</strong>
+      {% if from_name and from_address %}<span>{{ from_address }}</span>{% endif %}
+      <small>Кому: {{ to_display or '—' }}{% if cc_display %} · Копия: {{ cc_display }}{% endif %}</small>
+    </div>
+    <time>{{ date_display }}</time>
+  </header>
+
+  <div class="mail-message-body">{{ body }}</div>
+
+  {% if attachments %}
+    <section class="mail-attachments">
+      <h2>Вложения</h2>
+      <div class="mail-attachment-list">
+        {% for attachment in attachments %}
+          <a class="mail-attachment"
+             href="{{ url_for('mail_attachment', uid=uid, index=attachment.index, folder=folder) }}">
+            <span class="mail-attachment-icon" aria-hidden="true">↧</span>
+            <span>
+              <strong>{{ attachment.filename }}</strong>
+              <small>{{ (attachment.size / 1024)|round(1) }} КБ · {{ attachment.content_type }}</small>
+            </span>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</article>
+{% endblock %}

@@ -4,10 +4,15 @@ import os
 from pathlib import Path
 
 import office_app
+from office_mail import register_mail_features
 from office_release import register_release_features
 
 
 app = office_app.app
+# Почтовый модуль принимает до 10 МБ вложений плюс MIME-накладные расходы.
+# Nginx ограничен тем же безопасным порядком величины в deploy_office.sh.
+app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024
+
 register_release_features(
     app,
     db_path=office_app.DB_PATH,
@@ -21,4 +26,8 @@ register_release_features(
     login_required=office_app.login_required,
     customer_or_404=office_app._customer_or_404,
     now_iso=office_app._now_iso,
+)
+register_mail_features(
+    app,
+    login_required=office_app.login_required,
 )
