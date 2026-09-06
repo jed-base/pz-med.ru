@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import office_app
+from office_customer_mail import register_customer_mail_features
 from office_mail import register_mail_features
 from office_mail_actions import register_mail_action_features
 from office_release import register_release_features
@@ -35,4 +36,8 @@ register_mail_features(
 register_mail_action_features(
     app,
     login_required=office_app.login_required,
+)
+register_customer_mail_features(
+    app,
+    get_db=office_app.get_db,
 )
