@@ -82,6 +82,7 @@
       {% if messages %}
         <div class="mail-list">
           {% for item in messages %}
+            {% set linked_customer = office_mail_customer(item.from_address, item.to_display) %}
             <a class="mail-row {% if item.unread and folder != 'sent' %}mail-row-unread{% endif %}"
                href="{{ url_for('mail_message', uid=item.uid, folder=folder) }}">
               <span class="mail-unread-dot" aria-hidden="true"></span>
@@ -96,6 +97,7 @@
               </div>
               <div class="mail-row-subject">
                 <strong>{{ item.subject }}</strong>
+                {% if linked_customer %}<span class="mail-customer-tag">Заказчик · {{ linked_customer.name }}</span>{% endif %}
               </div>
               {% if folder == 'sent' %}
                 <span class="mail-status mail-status-sent">Отправлено</span>
