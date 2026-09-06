@@ -2,13 +2,20 @@
 {% block title %}{{ subject }} · Почта PZ-Med{% endblock %}
 
 {% block content %}
+{% set linked_customer = office_mail_customer(from_address, to_display, cc_display) %}
 <div class="page-head compact mail-message-head">
   <div>
     <div class="eyebrow">{{ folder_label }}</div>
     <h1>{{ subject }}</h1>
+    {% if linked_customer %}
+      <a class="mail-customer-link" href="{{ url_for('customer_detail', customer_id=linked_customer.id) }}">Заказчик · {{ linked_customer.name }}</a>
+    {% endif %}
   </div>
   <div class="head-actions mail-message-actions">
     <a class="button button-secondary" href="{{ url_for('mail_inbox', folder=folder) }}">← К списку</a>
+    {% if linked_customer %}
+      <a class="button button-secondary" href="{{ url_for('customer_detail', customer_id=linked_customer.id) }}">Карточка заказчика</a>
+    {% endif %}
     {% if folder == 'inbox' %}
       <a class="button" href="{{ url_for('mail_compose', reply_uid=uid, reply_folder=folder) }}">Ответить</a>
     {% endif %}
