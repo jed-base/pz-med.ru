@@ -41,6 +41,22 @@
     nav.append(demoNav);
   }
 
+  // В публичном разделе контактов показываем рабочую почту PZ-Med
+  // и заменяем временную заглушку на прямую кнопку для письма.
+  const contactCard = document.querySelector('#contact .contact-card');
+  if (contactCard) {
+    const contactText = contactCard.querySelector('p');
+    if (contactText) {
+      contactText.innerHTML = 'По вопросам внедрения и работы PZ-Med: <a href="mailto:ivan@pz-med.ru"><strong>ivan@pz-med.ru</strong></a>';
+    }
+
+    const contactAction = contactCard.querySelector('.button');
+    if (contactAction) {
+      contactAction.href = 'mailto:ivan@pz-med.ru';
+      contactAction.textContent = 'Написать на почту';
+    }
+  }
+
   // Первый экран показывает не нарисованный макет, а настоящее демо PZ-Med.
   // Интерфейс работает в отдельном preview-режиме: он уменьшен до размеров
   // карточки, подсвечивает элементы при наведении и переводит в полное демо
